@@ -37,27 +37,30 @@ class Element(object):
         :param v: v_component
         :return:
         """
-        pass
 
-    def get_supported_b_spline(self, i:int):
+        return self.u_min <= u <= self.u_max and self.v_min <= v <= self.v_max
+
+    def get_supported_b_spline(self, i: int):
         """
         Returns the i-th supported B-spline.
         :param i: index of supported B-spline
         :return: b-spline i
         """
+        return self.supported_b_splines[i]
 
     def add_supported_b_spline(self, b_spline):
         """
         Adds a B-spline to the list of supported B-splines.
         :param b_spline: B-spline to add
         """
-        pass
+        self.supported_b_splines.append(b_spline)
 
     def remove_supported_b_spline(self, b_spline):
         """
         Removes a B-spline from the list of supported B-splines.
         :param b_spline: B-spline to remove
         """
+        self.supported_b_splines.remove(b_spline)
 
     def has_supported_b_spline(self, b_spline) -> bool:
         """
@@ -65,11 +68,24 @@ class Element(object):
         :param b_spline: B-spline to check
         :return: True or False
         """
-        pass
+        return b_spline in self.supported_b_splines
 
-    def split(self, axis: int, split_value: float) -> Element:
+    def split(self, axis: int, split_value: float):
         """
         Splits the element into two, resizing into the left half, and returning the right half.
         :return: right half of element.
         """
-        pass
+
+        if axis == 0:  # vertical split
+            if not self.u_min < split_value < self.u_max:
+                return None
+            new_element = Element(split_value, self.v_min, self.u_max, self.v_max)
+            self.u_max = split_value
+
+        elif axis == 1:  # horizontal split
+            if not self.v_min < split_value < self.v_max:
+                return None
+            new_element = Element(self.u_min, split_value, self.u_max, self.v_max)
+            self.v_max = split_value
+
+        return new_element
