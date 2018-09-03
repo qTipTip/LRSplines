@@ -44,7 +44,7 @@ class LRBSpline(object):
         """
         pass
 
-    def add_support(self, element: Element) -> None:
+    def add_support(self, element: 'Element') -> None:
         """
         Adds an element to the list of elements which support this LRBspline
         :param element: element to add
@@ -52,7 +52,7 @@ class LRBSpline(object):
 
         pass
 
-    def remove_support(self, element: Element) -> None:
+    def remove_support(self, element: 'Element') -> None:
         """
         Removes an element from the list of elements which support this LRBSpline.
         :param element: element to remove
@@ -64,6 +64,15 @@ class LRBSpline(object):
         """
         Overwrites the list of element supports with given list.
         :param elements: List of elements.
+        """
+
+        pass
+
+    def has_support(self, element: Element) -> bool:
+        """
+        Returns True if given element is present in list of supported elements.
+        :param element: element of interest
+        :return: True or False
         """
 
         pass
