@@ -39,6 +39,13 @@ class Element(object):
         """
         pass
 
+    def get_supported_b_spline(self, i:int):
+        """
+        Returns the i-th supported B-spline.
+        :param i: index of supported B-spline
+        :return: b-spline i
+        """
+
     def add_supported_b_spline(self, b_spline):
         """
         Adds a B-spline to the list of supported B-splines.
