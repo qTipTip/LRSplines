@@ -4,7 +4,9 @@ of its lower left and upper right corner.
 """
 import typing
 
-BasisFunctions = typing.List['BSpline']
+from src.b_spline import BSpline
+
+BasisFunctions = typing.List[BSpline]
 
 
 class Element(object):
