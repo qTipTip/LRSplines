@@ -97,3 +97,10 @@ class Element(object):
         :return: midpoint of the element
         """
         return (self.u_max - self.u_min) * 0.5, (self.v_max - self.v_min) * 0.5
+
+    def area(self) -> float:
+        """
+        Returns the area of the element.
+        :return: area of the element
+        """
+        return (self.u_max - self.u_min) * (self.v_max - self.v_min)
