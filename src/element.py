@@ -115,3 +115,11 @@ class Element(object):
         """
 
         raise NotImplementedError('Updating of supported basis functions is not implemented yet')
+
+    def intersects(self, other: 'Element') -> bool:
+        """
+        Returns true if this element intersects the other element with *positive* area.
+        :param other: the element to check intersection with.
+        :return: true or false
+        """
+        raise NotImplementedError('Element intersection is not implemented yet')
