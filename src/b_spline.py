@@ -1,6 +1,7 @@
 import typing
 
 import numpy as np
+from _pytest import logging
 
 from src.element import Element
 
@@ -33,7 +34,25 @@ def _evaluate_univariate_b_spline(x: float, knots: Vector, degree: int) -> float
     :param degree: polynomial degree
     :return: B(x)
     """
-    raise NotImplementedError('Univariate Evaluation is not Implemented yet')
+    t = _augment_knots(knots, degree)
+    i = _find_knot_interval(x, t)
+    if i == 0:
+        return 0
+
+    c = np.zeros(len(t) - degree - 1)
+    c[degree + 1] = 1
+    c = c[i - degree: i + 1]
+
+    for k in range(degree, 0, -1):
+        t1 = t[i - k + 1: i + 1]
+        t2 = t[i + 1: i + k + 1]
+        omega = np.divide((x - t1), (t2 - t1), out=np.zeros_like(t1, dtype=np.float64), where=(t2 - t1) != 0)
+
+        a = np.multiply((1 - omega), c[:-1])
+        b = np.multiply(omega, c[1:])
+        c = a + b
+
+    return c
 
 
 def _augment_knots(knots: Vector, degree: int) -> np.ndarray:
@@ -53,7 +72,7 @@ def _find_knot_interval(x: float, knots: np.ndarray) -> int:
     :param knots: knot vector
     :return: index i
     """
-    if x < k[0] or x >= k[-1]:
+    if x < knots[0] or x >= knots[-1]:
         return -1
     return np.max(np.argmax(knots > x) - 1, 0)
 

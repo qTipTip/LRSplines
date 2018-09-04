@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.b_spline import BSpline, intersects
+from src.b_spline import BSpline, intersects, _evaluate_univariate_b_spline
 from src.element import Element
 
 
@@ -60,3 +60,20 @@ def test_b_spline_add_to_support_if_intersects():
     assert e1 in B.elements_of_support
     assert e2 not in B.elements_of_support
     assert e3 in B.elements_of_support
+
+
+def test_evaluate_univariate_b_spline():
+    d = 2
+    k = [0, 1, 2, 3]
+    X = np.linspace(0, 3, 20, endpoint=False)
+
+    def exact(x):
+        if 0 <= x < 1:
+            return x * x / 2
+        elif 1 <= x < 2:
+            return x / 2 * (2 - x) + (3 - x) / 2 * (x - 1)
+        else:
+            return (3 - x) * (3 - x) / 2
+
+    for x in X:
+        np.testing.assert_almost_equal(_evaluate_univariate_b_spline(x, k, d), exact(x))
