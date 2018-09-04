@@ -25,7 +25,7 @@ def intersects(b_spline: "BSpline", element: "Element") -> bool:
         return True
 
 
-def _evaluate_univariate_b_spline(x: float, knots: Vector, degree: int) -> float:
+def _evaluate_univariate_b_spline(x: float, knots: typing.Union[Vector, np.ndarray], degree: int) -> float:
     """
     Evaluates a univariate BSpline corresponding to the given knot vector and polynomial degree at the point x.
     :param x: point of evaluation
@@ -107,7 +107,11 @@ class BSpline(object):
         :param v: v component
         :return: B(u, v)
         """
-        raise NotImplementedError('Evaluation is not implemented yet')
+
+        return self.weight * _evaluate_univariate_b_spline(u, self.knots_u,
+                                                           self.degree_u) * _evaluate_univariate_b_spline(v,
+                                                                                                          self.knots_v,
+                                                                                                          self.degree_v)
 
     def add_to_support_if_intersects(self, element: "Element") -> bool:
         """
