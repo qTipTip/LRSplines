@@ -47,7 +47,7 @@ def _split(alpha_1: float, alpha_2: float, b: BSpline, m: Meshline, new_knots: n
     return b1, b2
 
 
-def _split_single_basis_function(m: Meshline, b: BSpline) -> None:
+def split_single_basis_function(m: Meshline, b: BSpline) -> typing.Tuple[BSpline, BSpline]:
     """
     Splits a single basis function according to the provided meshline and updates the set of basis functions.
     :param m: meshline to split basis func by
@@ -68,3 +68,5 @@ def _split_single_basis_function(m: Meshline, b: BSpline) -> None:
     new_knots = np.insert(knots_to_split, new_knot_index, new_knot)
 
     b1, b2 = _split(alpha_1, alpha_2, b, m, new_knots)
+
+    return b1, b2
