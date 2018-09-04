@@ -61,9 +61,11 @@ def test_element_intersects():
     e1 = Element(0, 0, 1, 1)
     e2 = Element(0.25, 0.25, 0.75, 0.75)
     e3 = Element(0.5, 0.5, 1.5, 1.5)
+    e4 = Element(1, 0, 2, 1)
 
     assert e1.intersects(e2)
     assert e1.intersects(e3)
-
-    e4 = e1.split(axis=0, split_value=.5)
     assert not e1.intersects(e4)
+
+    e5 = e1.split(axis=0, split_value=.5)
+    assert not e1.intersects(e5)
