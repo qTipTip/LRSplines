@@ -73,6 +73,14 @@ class Element(object):
         """
         return b_spline in self.supported_b_splines
 
+    def update_supported_basis(self, b_splines: BasisFunctions) -> None:
+        """
+        Updates the list of supported basis functions.
+        :param b_splines: list of BSpline functions
+        """
+
+        raise NotImplementedError('Updating of supported basis functions is not implemented yet')
+
     def split(self, axis: int, split_value: float):
         """
         Splits the element into two, resizing into the left half, and returning the right half.
@@ -107,14 +115,6 @@ class Element(object):
         :return: area of the element
         """
         return (self.u_max - self.u_min) * (self.v_max - self.v_min)
-
-    def update_supported_basis(self, b_splines: BasisFunctions) -> None:
-        """
-        Updates the list of supported basis functions.
-        :param b_splines: list of BSpline functions
-        """
-
-        raise NotImplementedError('Updating of supported basis functions is not implemented yet')
 
     def intersects(self, other: 'Element') -> bool:
         """
