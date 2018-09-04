@@ -2,7 +2,26 @@ import typing
 
 import numpy as np
 
+from src.element import Element
+
 Vector = typing.List['float']
+
+
+def intersects(b_spline: "BSpline", element: "Element") -> bool:
+    """
+    Returns true if the support of b_spline intersects the element with positive area.
+    :param b_spline: b_spline whose support is to be checked
+    :param element: element whose domain is to be checked
+    :return: true or false
+    """
+
+    intersection_u = min(b_spline.knots_u[-1], element.u_max) - max(b_spline.knots_u[0], element.u_min)
+    intersection_v = min(b_spline.knots_v[-1], element.v_max) - max(b_spline.knots_v[0], element.v_min)
+
+    if intersection_u <= 0 or intersection_v <= 0:
+        return False
+    else:
+        return True
 
 
 class BSpline(object):
@@ -44,3 +63,11 @@ class BSpline(object):
         :return: B(x)
         """
         raise NotImplementedError('Univariate Evaluation is not Implemented yet')
+
+    def add_to_support_if_intersects(self, element: "Element") -> bool:
+        """
+        Returns true if the given element intersects the support of this BSpline, and
+        adds element to the list of elements of support.
+        :param element: element in consideration
+        :return: true or false
+        """
