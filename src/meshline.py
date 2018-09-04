@@ -31,6 +31,8 @@ class Meshline(object):
 
         if self.axis == 0:  # vertical split
             return element.u_min < self.constant_value < element.u_max and self.start <= element.v_min and self.stop >= element.v_max
+        elif self.axis == 1:  # horizontal split
+            return element.v_min < self.constant_value < element.v_max and self.start <= element.u_min and self.stop >= element.u_max
 
     def splits_basis(self, basis: BSpline) -> bool:
         """
