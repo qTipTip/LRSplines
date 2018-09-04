@@ -30,9 +30,12 @@ class Meshline(object):
         """
 
         if self.axis == 0:  # vertical split
-            return element.u_min < self.constant_value < element.u_max and self.start <= element.v_min and self.stop >= element.v_max
+            return element.u_min < self.constant_value < element.u_max and self.start <= element.v_min and \
+                   self.stop >= element.v_max
         elif self.axis == 1:  # horizontal split
-            return element.v_min < self.constant_value < element.v_max and self.start <= element.u_min and self.stop >= element.u_max
+            return element.v_min < self.constant_value < element.v_max and self.start <= element.u_min and \
+                   self.stop >= element.u_max
+        return False
 
     def splits_basis(self, basis: BSpline) -> bool:
         """
@@ -40,4 +43,10 @@ class Meshline(object):
         :param basis: basis function to check split against
         :return: true or false
         """
-        pass
+        if self.axis == 0:  # vertical split
+            return basis.knots_u[0] < self.constant_value < basis.knots_u[-1] and \
+                   self.start <= basis.knots_v[0] and self.stop >= basis.knots_v[-1]
+        elif self.axis == 1:  # horizontal split
+            return basis.knots_v[0] < self.constant_value < basis.knots_v[-1] and \
+                   self.start <= basis.knots_u[0] and self.stop >= basis.knots_u[-1]
+        return False
