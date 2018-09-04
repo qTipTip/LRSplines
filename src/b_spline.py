@@ -5,6 +5,7 @@ import numpy as np
 from src.element import Element
 
 Vector = typing.List['float']
+ElementVector = typing.List['Element']
 
 
 def intersects(b_spline: "BSpline", element: "Element") -> bool:
@@ -45,6 +46,8 @@ class BSpline(object):
         self.knots_v = np.array(knots_v, dtype=np.float64)
         self.weight = weight
 
+        self.elements_of_support: ElementVector = []
+
     def __call__(self, u: float, v: float) -> float:
         """
         Evaluates the BSpline at the parametric point (u, v).
@@ -71,3 +74,9 @@ class BSpline(object):
         :param element: element in consideration
         :return: true or false
         """
+
+        if intersects(self, element):
+            self.elements_of_support.append(element)
+            return True
+        else:
+            return False
