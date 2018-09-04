@@ -62,6 +62,31 @@ def test_b_spline_add_to_support_if_intersects():
     assert e3 in B.elements_of_support
 
 
+def test_b_spline_remove_from_support():
+    du = 2
+    dv = 2
+    ku = [0, 1, 2, 3]
+    kv = [3, 4, 5, 6]
+
+    w = 1
+
+    B = BSpline(du, dv, ku, kv, w)
+
+    e1 = Element(2, -1, 4, 4)
+    e2 = Element(10, 10, 20, 20)
+    e3 = Element(1, 4, 2, 5)
+
+    assert B.add_to_support_if_intersects(e1)
+    assert not B.add_to_support_if_intersects(e2)
+    assert B.add_to_support_if_intersects(e3)
+
+    assert not B.remove_from_support(e2)
+    assert B.remove_from_support(e1)
+    assert e1 not in B.elements_of_support
+    assert B.remove_from_support(e3)
+    assert len(B.elements_of_support) == 0
+
+
 def test_evaluate_univariate_b_spline():
     d = 2
     k = [0, 1, 2, 3]

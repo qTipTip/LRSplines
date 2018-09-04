@@ -126,3 +126,17 @@ class BSpline(object):
             return True
         else:
             return False
+
+    def remove_from_support(self, element: "Element") -> bool:
+        """
+        Removes given element from the list of elements with support.
+        Returns true if element is found and removed, false otherwise.
+        :param element: element to remove
+        :return: true or false
+        """
+
+        if element in self.elements_of_support:
+            self.elements_of_support.remove(element)
+            return True
+        else:
+            return False
