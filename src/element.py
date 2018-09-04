@@ -76,6 +76,7 @@ class Element(object):
         :return: right half of element.
         """
 
+        new_element = None
         if axis == 0:  # vertical split
             if not self.u_min < split_value < self.u_max:
                 return None
@@ -89,3 +90,10 @@ class Element(object):
             self.v_max = split_value
 
         return new_element
+
+    def midpoint(self) -> (float, float):
+        """
+        Returns the midpoint of the element.
+        :return: midpoint of the element
+        """
+        return (self.u_max - self.u_min) * 0.5, (self.v_max - self.v_min) * 0.5

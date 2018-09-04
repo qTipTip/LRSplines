@@ -42,3 +42,9 @@ def test_element_invalid():
 
     assert e2 is None
     assert e1.u_min == 0 and e1.u_max == 1 and e1.v_min == 0 and e1.v_max == 1
+
+def test_element_midpoint():
+    e1 = Element(0, 0, 1, 1)
+    mp = e1.midpoint()
+
+    assert mp == (0.5, 0.5)
