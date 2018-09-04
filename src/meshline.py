@@ -28,7 +28,9 @@ class Meshline(object):
         :param element: element to check split against
         :return: true or false
         """
-        pass
+
+        if self.axis == 0:  # vertical split
+            return element.u_min < self.constant_value < element.u_max and self.start <= element.v_min and self.stop >= element.v_max
 
     def splits_basis(self, basis: BSpline) -> bool:
         """
