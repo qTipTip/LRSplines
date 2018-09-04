@@ -124,4 +124,10 @@ class Element(object):
         :param other: the element to check intersection with.
         :return: true or false
         """
-        raise NotImplementedError('Element intersection is not implemented yet')
+        intersection_u = min(other.u_max, self.u_max) - max(other.u_min, self.u_min)
+        intersection_v = min(other.v_max, self.v_max) - max(other.v_min, self.v_min)
+
+        if intersection_u <= 0 or intersection_v <= 0:
+            return False
+        else:
+            return True
