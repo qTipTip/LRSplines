@@ -85,3 +85,16 @@ def test_evaluate_univariate_b_spline_outside_knots():
     x = -1.0e-14
 
     assert _evaluate_univariate_b_spline(x, k, d) == 0
+
+
+def test_evaluate_b_spline():
+    ku = [0, 1, 2, 3]
+    kv = [0, 1, 2, 3]
+    d1 = 2
+    d2 = 2
+    B = BSpline(d1, d2, ku, kv)
+
+    np.testing.assert_almost_equal(B(0, 0), 0)
+    np.testing.assert_almost_equal(B(1.5, 1.5), 0.5625)
+    np.testing.assert_almost_equal(B(0, 1.5), 0)
+    np.testing.assert_almost_equal(B(1, 2), 0.25)
