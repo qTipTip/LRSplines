@@ -46,7 +46,7 @@ def test_element_invalid():
 
 def test_element_midpoint():
     e1 = Element(0, 0, 1, 1)
-    mp = e1.midpoint()
+    mp = e1.midpoint
 
     assert mp == (0.5, 0.5)
 
@@ -54,4 +54,4 @@ def test_element_midpoint():
 def test_element_area():
     e1 = Element(0, 0, 1, 1)
 
-    assert e1.area() == 1
+    assert e1.area == 1

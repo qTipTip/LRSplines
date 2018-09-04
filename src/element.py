@@ -102,13 +102,15 @@ class Element(object):
 
         return new_element
 
-    def midpoint(self) -> (float, float):
+    @property
+    def midpoint(self) -> typing.Tuple[float, float]:
         """
         Returns the midpoint of the element.
         :return: midpoint of the element
         """
         return (self.u_max - self.u_min) * 0.5, (self.v_max - self.v_min) * 0.5
 
+    @property
     def area(self) -> float:
         """
         Returns the area of the element.
