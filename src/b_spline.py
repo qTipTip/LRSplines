@@ -25,6 +25,39 @@ def intersects(b_spline: "BSpline", element: "Element") -> bool:
         return True
 
 
+def _evaluate_univariate_b_spline(x: float, knots: Vector, degree: int) -> float:
+    """
+    Evaluates a univariate BSpline corresponding to the given knot vector and polynomial degree at the point x.
+    :param x: point of evaluation
+    :param knots: knot vector
+    :param degree: polynomial degree
+    :return: B(x)
+    """
+    raise NotImplementedError('Univariate Evaluation is not Implemented yet')
+
+
+def _augment_knots(knots: Vector, degree: int) -> np.ndarray:
+    """
+    Adds degree + 1 values to either end of the knot vector, in order to facilitate matrix based evaluation.
+    :param knots: knot vector
+    :param degree: polynomial degree
+    :return: padded knot vector
+    """
+    return np.pad(knots, (degree + 1, degree + 1), 'constant', constant_values=(knots[0] - 1, knots[-1] + 1))
+
+
+def _find_knot_interval(x: float, knots: np.ndarray) -> int:
+    """
+    Finds the index i such that knots[i] <= x < knots[i+1]
+    :param x: point of interest
+    :param knots: knot vector
+    :return: index i
+    """
+    if x < k[0] or x >= k[-1]:
+        return -1
+    return np.max(np.argmax(knots > x) - 1, 0)
+
+
 class BSpline(object):
     """
     Represents a single weighted tensor product B-spline with associated methods and fields.
@@ -56,16 +89,6 @@ class BSpline(object):
         :return: B(u, v)
         """
         raise NotImplementedError('Evaluation is not implemented yet')
-
-    def _evaluate_univariate_b_spline(self, x: float, knots: Vector, degree: int) -> float:
-        """
-        Evaluates a univariate BSpline corresponding to the given knot vector and polynomial degree at the point x.
-        :param x: point of evaluation
-        :param knots: knot vector
-        :param degree: polynomial degree
-        :return: B(x)
-        """
-        raise NotImplementedError('Univariate Evaluation is not Implemented yet')
 
     def add_to_support_if_intersects(self, element: "Element") -> bool:
         """
