@@ -2,6 +2,9 @@
 This class represents a single mesh element (i.e., a rectangle), represented in terms
 of its lower left and upper right corner.
 """
+import typing
+
+BasisFunctions = typing.List['BSpline']
 
 
 class Element(object):
@@ -104,3 +107,11 @@ class Element(object):
         :return: area of the element
         """
         return (self.u_max - self.u_min) * (self.v_max - self.v_min)
+
+    def update_supported_basis(self, b_splines: BasisFunctions) -> None:
+        """
+        Updates the list of supported basis functions.
+        :param b_splines: list of BSpline functions
+        """
+
+        raise NotImplementedError('Updating of supported basis functions is not implemented yet')
