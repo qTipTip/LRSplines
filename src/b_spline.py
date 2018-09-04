@@ -1,7 +1,6 @@
 import typing
 
 import numpy as np
-from _pytest import logging
 
 from src.element import Element
 
@@ -36,7 +35,8 @@ def _evaluate_univariate_b_spline(x: float, knots: Vector, degree: int) -> float
     """
     t = _augment_knots(knots, degree)
     i = _find_knot_interval(x, t)
-    if i == 0:
+
+    if i <= degree:
         return 0
 
     c = np.zeros(len(t) - degree - 1)

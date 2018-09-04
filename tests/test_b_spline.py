@@ -77,3 +77,11 @@ def test_evaluate_univariate_b_spline():
 
     for x in X:
         np.testing.assert_almost_equal(_evaluate_univariate_b_spline(x, k, d), exact(x))
+
+
+def test_evaluate_univariate_b_spline_outside_knots():
+    d = 2
+    k = [0, 1, 2, 3]
+    x = -1.0e-14
+
+    assert _evaluate_univariate_b_spline(x, k, d) == 0
