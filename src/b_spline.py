@@ -2,7 +2,8 @@ import typing
 
 import numpy as np
 
-from src.element import Element
+if False:
+    from src.element import Element
 
 Vector = typing.List['float']
 ElementVector = typing.List['Element']

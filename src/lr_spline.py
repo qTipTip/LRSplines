@@ -2,7 +2,6 @@ from typing import List
 
 from src.b_spline import BSpline
 from src.element import Element
-from src.meshline import Meshline
 
 
 class LRSpline(object):
@@ -11,7 +10,7 @@ class LRSpline(object):
     defined on M.
     """
 
-    def __init__(self, mesh: List['Element'], basis: List['BSpline']):
+    def __init__(self, mesh: List['Element'], basis: List['BSpline']) -> None:
         """
         Initialize an LR Spline with associated set of elements, and set of basis functions.
         :param mesh: elements constituting the LR mesh
@@ -35,12 +34,3 @@ class LRSpline(object):
         :param e: element to refine
         """
         raise NotImplementedError('LRSpline.{} is not implemented yet'.format(self.refine_by_element_minimal.__name__))
-
-    def _split_single_basis_function(self, m: Meshline, b: BSpline) -> None:
-        """
-        Splits a single basis function according to the provided meshline and updates the set of basis functions.
-        :param m: meshline to split basis func by
-        :param b: basis function to split
-        """
-        raise NotImplementedError(
-            'LRSpline.{} is not implemented yet'.format(self._split_single_basis_function.__name__))
