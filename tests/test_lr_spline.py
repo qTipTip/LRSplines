@@ -1,6 +1,7 @@
 from b_spline import BSpline
 from element import Element
 from lr_spline import init_tensor_product_LR_spline, LRSpline
+from meshline import Meshline
 
 
 def test_lr_spline_minimal_span_line():
@@ -44,3 +45,33 @@ def test_lr_spline_minimal_span_line_superficial():
     assert small_span_meshline_horizontal.start == 0
     assert small_span_meshline_horizontal.stop == 1
     assert small_span_meshline_horizontal.constant_value == 1
+
+
+def test_lr_spline_insert_line():
+    LR = init_tensor_product_LR_spline(1, 1, [0, 1, 2, 3], [0, 1, 2])
+    M = Meshline(0, 2, constant_value=0.5, axis=1)  # horizontal split
+    LR.insert_line(M)
+
+    # expected functions
+    b1 = BSpline(1, 1, [0, 1, 2], [0, 0.5, 1])
+    b2 = BSpline(1, 1, [0, 1, 2], [0.5, 1, 2])
+    b3 = BSpline(1, 1, [1, 2, 3], [0, 1, 2])
+
+    assert b1 in LR.S
+    assert b2 in LR.S
+    assert b3 in LR.S
+    assert len(LR.S) == 3
+
+    expected_elements = [
+        Element(0, 0, 1, 0.5),
+        Element(1, 0, 2, 0.5),
+        Element(0, 0.5, 1, 1),
+        Element(1, 0.5, 2, 1),
+        Element(2, 0, 3, 1),
+        Element(0, 1, 1, 2),
+        Element(1, 1, 2, 2),
+        Element(2, 1, 3, 2)
+    ]
+
+    assert all([LR.contains_element(e) for e in expected_elements])
+    assert len(LR.M) == 8

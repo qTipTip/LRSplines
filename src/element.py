@@ -144,3 +144,6 @@ class Element(object):
         tol = 1.0e-14
         return abs(self.u_min - other.u_min) < tol and abs(self.u_max - other.u_max) < tol and abs(
             self.v_min - other.v_min) < tol and abs(self.v_max - other.v_max) < tol
+
+    def __repr__(self):
+        return "Element({}, {}, {}, {})".format(self.u_min, self.v_min, self.u_max, self.v_max)
