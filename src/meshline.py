@@ -1,3 +1,5 @@
+import typing
+
 import numpy as np
 
 from src.b_spline import BSpline
@@ -75,3 +77,18 @@ class Meshline(object):
         :param knots: knot vector
         """
         self.multiplicity = self._number_of_knots_contained_helper(knots)
+
+    @property
+    def midpoint(self) -> typing.Tuple[float, float]:
+        """
+        Returns the midpoint of the meshline.
+        :return: midpoint of the mesh line.
+        """
+
+        a = (self.stop - self.start) / 2
+        b = self.constant_value
+
+        if self.axis == 0:
+            return (b, a)
+        else:
+            return (a, b)

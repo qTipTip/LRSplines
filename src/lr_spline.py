@@ -42,11 +42,11 @@ def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> '
 
     for i in range(len(unique_ku)):
         new_m = Meshline(start=unique_kv[0], stop=unique_kv[-1], constant_value=unique_ku[i], axis=0)
-        new_m.multiplicity = new_m.set_multiplicity(ku)
+        new_m.set_multiplicity(ku)
         meshlines.append(new_m)
     for i in range(len(unique_kv)):
         new_m = Meshline(start=unique_ku[0], stop=unique_ku[-1], constant_value=unique_kv[i], axis=1)
-        new_m.multiplicity = new_m.set_multiplicity(kv)
+        new_m.set_multiplicity(kv)
         meshlines.append(new_m)
 
     return LRSpline(elements, basis, meshlines)
@@ -246,5 +246,5 @@ class LRSpline(object):
 
         total = 0
         for b in e.supported_b_splines:
-            total += b(u, v)
+            total += b.coefficient * b(u, v)
         return total
