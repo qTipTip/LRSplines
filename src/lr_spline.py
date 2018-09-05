@@ -139,10 +139,13 @@ class LRSpline(object):
                     if m.number_of_knots_contained(basis) < m.multiplicity:
                         self.local_split(basis, m, functions_to_remove, new_functions)
 
-        for basis in functions_to_remove:
-            self.S.remove(basis)
-
+        purged_S = [s for s in self.S if s not in functions_to_remove]
+        # for basis in functions_to_remove:
+        #    print(id(basis))
+        #    self.S.remove(basis)
+        self.S = purged_S
         self.S += new_functions
+
 
         # step 3
         # split all marked elements against new meshline

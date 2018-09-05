@@ -123,3 +123,14 @@ def test_lr_spline_insert_multiple():
     assert len(LR.S) == 52
     LR.insert_line(m2)
     assert len(LR.S) == 62
+
+    # assorted expected functions
+    b1 = BSpline(2, 2, [1, 2, 3, 4], [2, 3, 4, 5])
+    b2 = BSpline(2, 2, [2, 3, 4, 5], [2, 3, 4, 5])
+    b3 = BSpline(2, 2, [1, 2, 3, 4], [2, 3, 4, 5])
+    b4 = BSpline(2, 2, [1, 2, 4, 5], [3, 4, 5, 6])
+
+    assert b1 in LR.S
+    assert b2 in LR.S
+    assert b3 in LR.S
+    assert b4 in LR.S
