@@ -110,7 +110,7 @@ class Element(object):
         Returns the midpoint of the element.
         :return: midpoint of the element
         """
-        return (self.u_max - self.u_min) * 0.5, (self.v_max - self.v_min) * 0.5
+        return (self.u_max - self.u_min) * 0.5 + self.u_min, (self.v_max - self.v_min) * 0.5 + self.v_min
 
     @property
     def area(self) -> float:
