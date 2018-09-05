@@ -53,3 +53,12 @@ def test_meshline_splits_basis():
 
     assert not m2.splits_basis(b1)
     assert not m2.splits_basis(b2)
+
+
+def test_meshline_number_of_knots():
+    b1 = BSpline(1, 1, [0, 1, 2], [0, 1, 2])
+    m1 = Meshline(0, 2, constant_value=1, axis=0)
+    m2 = Meshline(0, 2, constant_value=0.5, axis=1)
+
+    assert m1.number_of_knots_contained(b1) == 1
+    assert m2.number_of_knots_contained(b1) == 0

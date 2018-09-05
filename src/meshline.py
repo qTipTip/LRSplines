@@ -1,3 +1,5 @@
+import numpy as np
+
 from src.b_spline import BSpline
 from src.element import Element
 
@@ -43,6 +45,7 @@ class Meshline(object):
         :param basis: basis function to check split against
         :return: true or false
         """
+
         if self.axis == 0:  # vertical split
             return basis.knots_u[0] < self.constant_value < basis.knots_u[-1] and \
                    self.start <= basis.knots_v[0] and self.stop >= basis.knots_v[-1]
@@ -50,3 +53,15 @@ class Meshline(object):
             return basis.knots_v[0] < self.constant_value < basis.knots_v[-1] and \
                    self.start <= basis.knots_u[0] and self.stop >= basis.knots_u[-1]
         return False
+
+    def number_of_knots_contained(self, basis: BSpline) -> int:
+        """
+        Returns the number of knots of given BSpline that lies on this meshline.
+        :param basis: BSpline
+        :return: number of knots of BSpline that lies on this meshline.
+        """
+        knots = basis.knots_u if self.axis == 0 else basis.knots_v
+
+        tol = 1.0e-14
+
+        return np.sum(np.abs(knots - self.constant_value) < tol)
