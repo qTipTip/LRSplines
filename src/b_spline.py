@@ -150,4 +150,5 @@ class BSpline(object):
         :param other: BSpline to compare against
         :return: true or false
         """
-        return np.allclose(self.knots_u, other.knots_u) and np.allclose(self.knots_v, other.knots_v)
+        return np.allclose(self.knots_u, other.knots_u, atol=1.0e-14) and np.allclose(self.knots_v, other.knots_v,
+                                                                                      atol=1.0e-14)
