@@ -22,6 +22,8 @@ def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> '
     """
     elements = []
     basis = []
+    meshlines = []
+
     for i in range(len(ku) - 1):
         for j in range(len(kv) - 1):
             elements.append(Element(ku[i], kv[j], ku[i + 1], kv[j + 1]))
@@ -35,7 +37,12 @@ def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> '
             if b.add_to_support_if_intersects(e):
                 e.add_supported_b_spline(b)
 
-    return LRSpline(elements, basis)
+    for i in range(len(ku)):
+        meshlines.append(Meshline(start=kv[0], stop=kv[-1], constant_value=ku[i], axis=0))
+    for i in range(len(kv)):
+        meshlines.append(Meshline(start=ku[0], stop=ku[-1], constant_value=kv[i], axis=1))
+
+    return LRSpline(elements, basis, meshlines)
 
 
 class LRSpline(object):
@@ -44,7 +51,7 @@ class LRSpline(object):
     defined on M.
     """
 
-    def __init__(self, mesh: List['Element'], basis: List['BSpline']) -> None:
+    def __init__(self, mesh: List['Element'], basis: List['BSpline'], meshlines: List['Meshline']) -> None:
         """
         Initialize an LR Spline with associated set of elements, and set of basis functions.
         :param mesh: elements constituting the LR mesh
@@ -52,7 +59,7 @@ class LRSpline(object):
         """
         self.M = mesh
         self.S = basis
-        self.meshlines = []
+        self.meshlines = meshlines
 
     def refine_by_element_full(self, e: Element) -> None:
         """
@@ -121,15 +128,17 @@ class LRSpline(object):
         functions_to_remove = []
         for basis in self.S:
             if meshline.splits_basis(basis):
-                self.local_split(basis, meshline, functions_to_remove, new_functions)
+                if meshline.number_of_knots_contained(basis) < meshline.multiplicity:
+                    self.local_split(basis, meshline, functions_to_remove, new_functions)
 
         # step 2
         # split new B-splines against old meshlines
 
         for basis in new_functions:
-            for meshline in self.meshlines:
-                if meshline.splits_basis(basis):
-                    self.local_split(basis, meshline, functions_to_remove, new_functions)
+            for m in self.meshlines:
+                if m.splits_basis(basis):
+                    if m.number_of_knots_contained(basis) < m.multiplicity:
+                        self.local_split(basis, m, functions_to_remove, new_functions)
 
         for basis in functions_to_remove:
             self.S.remove(basis)
@@ -144,6 +153,7 @@ class LRSpline(object):
                 new_elements.append(element.split(axis=meshline.axis, split_value=meshline.constant_value))
 
         self.M += new_elements
+        self.meshlines.append(meshline)
         # step 4
         # clean up, make sure all basis functions points to correct elements
         # make sure all elements point to correct basis functions

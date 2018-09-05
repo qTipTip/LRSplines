@@ -75,3 +75,9 @@ def test_lr_spline_insert_line():
 
     assert all([LR.contains_element(e) for e in expected_elements])
     assert len(LR.M) == 8
+
+
+def test_lr_spline_insert_multiple():
+    pass
+    # LR = init_tensor_product_LR_spline([2, 2, [0, 0, 0, 1,2, 4, 5, 6, 6, 6], [0, 0, 0, 1, 2, 4, 5, 6, 6, 6]])
+    # LR.insert_line()
