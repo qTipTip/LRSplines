@@ -142,3 +142,12 @@ class BSpline(object):
             return True
         else:
             return False
+
+    def __eq__(self, other: "BSpline") -> bool:
+        """
+        Implements == operator for BSplines. Two BSplines are assumed to be equal if their knot vectors are equal
+        within a tolerance.
+        :param other: BSpline to compare against
+        :return: true or false
+        """
+        return np.allclose(self.knots_u, other.knots_u) and np.allclose(self.knots_v, other.knots_v)
