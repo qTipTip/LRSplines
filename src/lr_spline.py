@@ -10,7 +10,7 @@ from src.element import Element
 Vector = typing.Union[typing.List['float'], np.ndarray]
 
 
-def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> LRSpline:
+def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> 'LRSpline':
     """
     Initializes an LR spline at the tensor product level of bidegree (d1, d2).
     :param d1: first component degree
