@@ -134,3 +134,24 @@ def test_lr_spline_insert_multiple():
     assert b2 in LR.S
     assert b3 in LR.S
     assert b4 in LR.S
+
+
+def test_lr_spline_cleanup():
+    LR = init_tensor_product_LR_spline(1, 1, [0, 1, 2], [0, 1, 2])
+    M = Meshline(0, 2, constant_value=0.5, axis=0)
+    LR.insert_line(M)
+
+    elements = [
+        Element(0, 0, 0.5, 1),
+        Element(0, 1, 0.5, 2),
+        Element(0.5, 0, 1, 1),
+        Element(0.5, 1, 1, 2),
+        Element(1, 0, 2, 1),
+        Element(1, 1, 2, 2)
+    ]
+
+    b1 = LR.S[0]
+    b2 = LR.S[1]
+
+    assert all(e in b1.elements_of_support for e in elements[0:4])
+    assert all(e in b2.elements_of_support for e in elements[2:])
