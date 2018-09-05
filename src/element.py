@@ -133,3 +133,14 @@ class Element(object):
             return False
         else:
             return True
+
+    def __eq__(self, other: 'Element') -> bool:
+        """
+        Checks whether the two elements are equal within a tolerance.
+        :param other: element to compare
+        :return: true or false
+        """
+
+        tol = 1.0e-14
+        return abs(self.u_min - other.u_min) < tol and abs(self.u_max - other.u_max) < tol and abs(
+            self.v_min - other.v_min) < tol and abs(self.v_max - other.v_max) < tol
