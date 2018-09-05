@@ -34,10 +34,8 @@ def test_lr_spline_minimal_span_line_superficial():
     element.add_supported_b_spline(b1)
     element.add_supported_b_spline(b2)
 
-    LR = LRSpline([element], [b1, b2])
-
-    small_span_meshline_vertical = LR.get_minimal_span_meshline(element, axis=0)
-    small_span_meshline_horizontal = LR.get_minimal_span_meshline(element, axis=1)
+    small_span_meshline_vertical = LRSpline.get_minimal_span_meshline(element, axis=0)
+    small_span_meshline_horizontal = LRSpline.get_minimal_span_meshline(element, axis=1)
 
     assert small_span_meshline_vertical.start == 0
     assert small_span_meshline_vertical.stop == 2

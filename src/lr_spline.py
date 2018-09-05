@@ -68,7 +68,8 @@ class LRSpline(object):
         """
         raise NotImplementedError('LRSpline.{} is not implemented yet'.format(self.refine_by_element_minimal.__name__))
 
-    def get_minimal_span_meshline(self, e: Element, axis=0) -> Meshline:
+    @staticmethod
+    def get_minimal_span_meshline(e: Element, axis=0) -> Meshline:
         """
         Finds the shortest possible meshline in direction prescribed by axis that splits at least one supported B-spline on the element.
         :param e: element to refine by
@@ -89,3 +90,10 @@ class LRSpline(object):
         constant_value = e.midpoint[axis]
 
         return Meshline(smallest_start, smallest_stop, constant_value, axis)
+
+    def insert_line(self, meshline: Meshline) -> None:
+        """
+        Inserts a line in the mesh, splitting where necessary.
+        :param meshline: meshline to insert
+        """
+        raise NotImplementedError('LRSpline.{} is not implemented yet'.format(self.insert_line.__name__))
