@@ -146,7 +146,6 @@ class LRSpline(object):
         self.S = purged_S
         self.S += new_functions
 
-
         # step 3
         # split all marked elements against new meshline
         new_elements = []
@@ -160,6 +159,14 @@ class LRSpline(object):
         # step 4
         # clean up, make sure all basis functions points to correct elements
         # make sure all elements point to correct basis functions
+        # TODO: This implementation is preliminary, and possibly very slow.
+        for element in self.M:
+            element.supported_b_splines = []
+        for basis in self.S:
+            basis.elements_of_support = []
+            for element in self.M:
+                if basis.add_to_support_if_intersects(element):
+                    element.add_supported_b_spline(basis)
 
     def local_split(self, basis, m, functions_to_remove, new_functions):
         b1, b2, a1, a2 = split_single_basis_function(m, basis, return_weights=True)
