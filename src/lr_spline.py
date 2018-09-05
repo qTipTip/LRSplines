@@ -24,9 +24,12 @@ def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> '
     basis = []
     meshlines = []
 
-    for i in range(len(ku) - 1):
-        for j in range(len(kv) - 1):
-            elements.append(Element(ku[i], kv[j], ku[i + 1], kv[j + 1]))
+    unique_ku = np.unique(ku)
+    unique_kv = np.unique(kv)
+
+    for i in range(len(unique_ku) - 1):
+        for j in range(len(unique_kv) - 1):
+            elements.append(Element(unique_ku[i], unique_kv[j], unique_ku[i + 1], unique_kv[j + 1]))
 
     for i in range(len(ku) - d1 - 1):
         for j in range(len(kv) - d2 - 1):
@@ -37,10 +40,14 @@ def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> '
             if b.add_to_support_if_intersects(e):
                 e.add_supported_b_spline(b)
 
-    for i in range(len(ku)):
-        meshlines.append(Meshline(start=kv[0], stop=kv[-1], constant_value=ku[i], axis=0))
-    for i in range(len(kv)):
-        meshlines.append(Meshline(start=ku[0], stop=ku[-1], constant_value=kv[i], axis=1))
+    for i in range(len(unique_ku)):
+        new_m = Meshline(start=unique_kv[0], stop=unique_kv[-1], constant_value=unique_ku[i], axis=0)
+        new_m.multiplicity = new_m.set_multiplicity(ku)
+        meshlines.append(new_m)
+    for i in range(len(unique_kv)):
+        new_m = Meshline(start=unique_ku[0], stop=unique_ku[-1], constant_value=unique_kv[i], axis=1)
+        new_m.multiplicity = new_m.set_multiplicity(kv)
+        meshlines.append(new_m)
 
     return LRSpline(elements, basis, meshlines)
 
@@ -222,3 +229,22 @@ class LRSpline(object):
             if e == element:
                 return True
         return False
+
+    def __call__(self, u, v):
+        """
+        Evaluates the LRSpline at the point (u, v)
+        :param u: first component
+        :param v: secont component
+        :return: L(u, v)
+        """
+
+        for e in self.M:
+            if e.contains(u, v):
+                break
+        else:
+            raise ValueError('({}, {}) is not in the domain'.format(u, v))
+
+        total = 0
+        for b in e.supported_b_splines:
+            total += b(u, v)
+        return total

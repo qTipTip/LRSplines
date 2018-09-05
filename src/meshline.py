@@ -62,6 +62,16 @@ class Meshline(object):
         """
         knots = basis.knots_u if self.axis == 0 else basis.knots_v
 
+        return self._number_of_knots_contained_helper(knots)
+
+    def _number_of_knots_contained_helper(self, knot_vector) -> int:
         tol = 1.0e-14
 
-        return np.sum(np.abs(knots - self.constant_value) < tol)
+        return int(np.sum(np.abs(knot_vector - self.constant_value) < tol))
+
+    def set_multiplicity(self, knots) -> None:
+        """
+        Sets the multiplicity of the mesh line according to how many knots in the knot vector overlaps with this constant value.
+        :param knots: knot vector
+        """
+        self.multiplicity = self._number_of_knots_contained_helper(knots)
