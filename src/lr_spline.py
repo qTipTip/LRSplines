@@ -3,6 +3,7 @@ from typing import List
 
 import numpy as np
 
+from aux_split_functions import split_single_basis_function
 from meshline import Meshline
 from src.b_spline import BSpline
 from src.element import Element
@@ -51,6 +52,7 @@ class LRSpline(object):
         """
         self.M = mesh
         self.S = basis
+        self.meshlines = []
 
     def refine_by_element_full(self, e: Element) -> None:
         """
@@ -79,7 +81,6 @@ class LRSpline(object):
 
         smallest_start = None
         smallest_stop = None
-        basis: BSpline
         for basis in e.supported_b_splines:
             k = basis.knots_v if axis == 0 else basis.knots_u
             current_length = abs(k[-1] - k[0])
@@ -94,6 +95,110 @@ class LRSpline(object):
     def insert_line(self, meshline: Meshline) -> None:
         """
         Inserts a line in the mesh, splitting where necessary.
+        Follows a four step procedure:
+
+            Step 1: Test all BSplines against the new meshline, and if the meshline traverses the support, split the
+            BSpline into B1 and B2. For both B1 and B2, check whether they are already in the set of previous
+            BSplines. If they are not, add them to the list of new functions. Add the function that was split to the
+            list of functions to remove.
+
+            Step 2: Test all the new B-splines against all the meshlines already present in the mesh. They might have
+            to be split further.
+
+            Step 3: Check all elements of the mesh, and make sure that any previous elements traversed by the new
+            meshline are split accordingly.
+
+            Step 4: Make sure that all elements keep track of the basis functions they support, and that all basis
+            functions keep track of the elements that support them.
+
         :param meshline: meshline to insert
         """
-        raise NotImplementedError('LRSpline.{} is not implemented yet'.format(self.insert_line.__name__))
+
+        # step 1
+        # split B-splines against new meshline
+
+        new_functions = []
+        functions_to_remove = []
+        for basis in self.S:
+            if meshline.splits_basis(basis):
+                self.local_split(basis, meshline, functions_to_remove, new_functions)
+
+        # step 2
+        # split new B-splines against old meshlines
+
+        for basis in new_functions:
+            for meshline in self.meshlines:
+                if meshline.splits_basis(basis):
+                    self.local_split(basis, meshline, functions_to_remove, new_functions)
+
+        for basis in functions_to_remove:
+            self.S.remove(basis)
+
+        self.S += new_functions
+
+        # step 3
+        # split all marked elements against new meshline
+        new_elements = []
+        for element in self.M:
+            if meshline.splits_element(element):
+                new_elements.append(element.split(axis=meshline.axis, split_value=meshline.constant_value))
+
+        self.M += new_elements
+        # step 4
+        # clean up, make sure all basis functions points to correct elements
+        # make sure all elements point to correct basis functions
+
+    def local_split(self, basis, m, functions_to_remove, new_functions):
+        b1, b2, a1, a2 = split_single_basis_function(m, basis, return_weights=True)
+        if b1 in self.S:
+            self._update_old_basis_function(basis, b1, a1)
+        else:
+            b1.coefficient = basis.coefficient
+            b1.weight = a1 * basis.weight
+            new_functions.append(b1)
+        if b2 in self.S:
+            self._update_old_basis_function(basis, b2, a2)
+        else:
+            b2.coefficient = basis.coefficient
+            b2.weight = a2 * basis.weight
+            new_functions.append(b2)
+        functions_to_remove.append(basis)
+
+    def _update_old_basis_function(self, original_basis, new_basis, weight) -> None:
+        """
+        Updates the basis function corresponding to b1 with new weights and coefficients, dependent on
+        the basis that was split, and the new basis function.
+        :param original_basis: the orginal basis function that was split, yielding `new basis`
+        :param new_basis: the `new basis` originating from splitting `original_basis`, which is already present in self.S
+        :return:
+        """
+        i = self.S.index(new_basis)
+        self.S[i].coefficient = (self.S[
+                                     i].coefficient * new_basis.weight + original_basis.coefficient * original_basis.weight * weight) / (
+                                        new_basis.weight + weight * original_basis.weight)
+        self.S[i].weight = new_basis.weight + weight * original_basis.weight
+
+    def contains_basis_function(self, B: BSpline) -> bool:
+        """
+        Returns true if B is found in self.S
+        :param B: BSpline to find
+        :return: true or false
+        """
+
+        for b in self.S:
+            if b == B:
+                return True
+
+        return False
+
+    def contains_element(self, element: 'Element') -> bool:
+        """
+        Returns true if element is found in self.M
+        :param element: element to check
+        :return: true or false
+        """
+
+        for e in self.M:
+            if e == element:
+                return True
+        return False
