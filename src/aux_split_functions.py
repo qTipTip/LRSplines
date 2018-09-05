@@ -3,9 +3,7 @@ import typing
 import numpy as np
 
 from src.b_spline import BSpline
-
-if False:
-    from src.meshline import Meshline
+from src.meshline import Meshline
 
 
 def _split_weights(knots: np.ndarray, x: float) -> typing.Tuple[float, float]:
@@ -41,7 +39,7 @@ def _split(alpha_1: float, alpha_2: float, b: BSpline, m: Meshline, new_knots: n
     """
     if m.axis == 0:  # vertical split
         b1 = BSpline(b.degree_u, b.degree_v, new_knots[:-1], b.knots_v, b.weight * alpha_1)
-        b2 = BSpline(b.degree_u, b.degree_v, new_knots[:1], b.knots_v, b.weight * alpha_2)
+        b2 = BSpline(b.degree_u, b.degree_v, new_knots[1:], b.knots_v, b.weight * alpha_2)
     elif m.axis == 1:  # horizontal split
         b1 = BSpline(b.degree_u, b.degree_v, b.knots_u, new_knots[:-1], b.weight * alpha_1)
         b2 = BSpline(b.degree_u, b.degree_v, b.knots_u, new_knots[1:], b.weight * alpha_2)
