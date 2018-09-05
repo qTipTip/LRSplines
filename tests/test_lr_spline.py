@@ -47,7 +47,7 @@ def test_lr_spline_minimal_span_line_superficial():
     assert small_span_meshline_horizontal.constant_value == 1
 
 
-def test_lr_spline_insert_line():
+def test_lr_spline_insert_line_single():
     LR = init_tensor_product_LR_spline(1, 1, [0, 1, 2, 3], [0, 1, 2])
     M = Meshline(0, 2, constant_value=0.5, axis=1)  # horizontal split
     LR.insert_line(M)
@@ -77,7 +77,49 @@ def test_lr_spline_insert_line():
     assert len(LR.M) == 8
 
 
+def test_lr_spline_insert_line_multiple():
+    LR = init_tensor_product_LR_spline(1, 1, [0, 1, 2, 3], [0, 1, 2])
+    M1 = Meshline(0, 2, constant_value=0.5, axis=1)  # horizontal split
+    M2 = Meshline(0, 1, constant_value=1.5, axis=0)  # vertical split
+    LR.insert_line(M1)
+    LR.insert_line(M2)
+
+    # expected functions
+    b1 = BSpline(1, 1, [0, 1, 1.5], [0, 0.5, 1])
+    b2 = BSpline(1, 1, [1, 1.5, 2], [0, 0.5, 1])
+    b3 = BSpline(1, 1, [0, 1, 2], [0.5, 1, 2])
+    b4 = BSpline(1, 1, [1, 2, 3], [0, 1, 2])
+
+    assert b1 in LR.S
+    assert b2 in LR.S
+    assert b3 in LR.S
+    assert b3 in LR.S
+    assert len(LR.S) == 4
+
+    expected_elements = [
+        Element(0, 0, 1, 0.5),
+        Element(1, 0, 1.5, 0.5),
+        Element(1.5, 0, 2, 0.5),
+        Element(0, 0.5, 1, 1),
+        Element(1, 0.5, 1.5, 1),
+        Element(1.5, 0.5, 2, 1),
+        Element(2, 0, 3, 1),
+        Element(0, 1, 1, 2),
+        Element(1, 1, 2, 2),
+        Element(2, 1, 3, 2)
+    ]
+
+    assert all([LR.contains_element(e) for e in expected_elements])
+    assert len(LR.M) == 10
+
+
 def test_lr_spline_insert_multiple():
-    pass
-    # LR = init_tensor_product_LR_spline([2, 2, [0, 0, 0, 1,2, 4, 5, 6, 6, 6], [0, 0, 0, 1, 2, 4, 5, 6, 6, 6]])
-    # LR.insert_line()
+    LR = init_tensor_product_LR_spline(2, 2, [0, 0, 0, 1, 2, 4, 5, 6, 6, 6], [0, 0, 0, 1, 2, 4, 5, 6, 6, 6])
+    m1 = Meshline(1, 5, constant_value=3, axis=0)
+    m2 = Meshline(1, 5, constant_value=3, axis=1)
+
+    assert len(LR.S) == 49
+    LR.insert_line(m1)
+    assert len(LR.S) == 52
+    LR.insert_line(m2)
+    assert len(LR.S) == 62

@@ -133,7 +133,6 @@ class LRSpline(object):
 
         # step 2
         # split new B-splines against old meshlines
-
         for basis in new_functions:
             for m in self.meshlines:
                 if m.splits_basis(basis):
@@ -154,6 +153,7 @@ class LRSpline(object):
 
         self.M += new_elements
         self.meshlines.append(meshline)
+
         # step 4
         # clean up, make sure all basis functions points to correct elements
         # make sure all elements point to correct basis functions
