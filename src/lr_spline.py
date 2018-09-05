@@ -75,4 +75,17 @@ class LRSpline(object):
         :param axis: direction to look for split, 0 vertical, 1 horizontal
         :return: minimal span meshline
         """
-        raise NotImplementedError('LRSpline.{} is not implemented yet'.format(self.get_minimal_span_meshline.__name__))
+
+        smallest_start = None
+        smallest_stop = None
+        basis: BSpline
+        for basis in e.supported_b_splines:
+            k = basis.knots_v if axis == 0 else basis.knots_u
+            current_length = abs(k[-1] - k[0])
+            if smallest_start is None or smallest_stop is None or current_length < (smallest_stop - smallest_start):
+                smallest_start = k[0]
+                smallest_stop = k[-1]
+
+        constant_value = e.midpoint[axis]
+
+        return Meshline(smallest_start, smallest_stop, constant_value, axis)
