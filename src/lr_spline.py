@@ -139,26 +139,33 @@ class LRSpline(object):
         new_functions = []
         functions_to_remove = []
         for basis in self.S:
-            if meshline.splits_basis(basis):
-                if meshline.number_of_knots_contained(basis) < meshline.multiplicity:
-                    self.local_split(basis, meshline, functions_to_remove, new_functions)
+            # debug
+            if basis == BSpline(1, 1, [3, 3.5, 4], [2, 3, 4]):
+                if meshline.splits_basis(basis):
+                    if meshline.number_of_knots_contained(basis) < meshline.multiplicity:
+                        self.local_split(basis, meshline, functions_to_remove, new_functions)
+            else:
+                if meshline.splits_basis(basis):
+                    if meshline.number_of_knots_contained(basis) < meshline.multiplicity:
+                        self.local_split(basis, meshline, functions_to_remove, new_functions)
 
         # step 2
         # split new B-splines against old meshlines
         for basis in new_functions:
-            for m in self.meshlines:
-                if m.splits_basis(basis):
-                    if m.number_of_knots_contained(basis) < m.multiplicity:
-                        self.local_split(basis, m, functions_to_remove, new_functions)
+            # debug
+            if basis == BSpline(1, 1, [3, 3.5, 4], [2, 3, 4]):
+                for m in self.meshlines:
+                    if m.splits_basis(basis):
+                        if m.number_of_knots_contained(basis) < m.multiplicity:
+                            self.local_split(basis, m, functions_to_remove, new_functions)
+            else:
+                for m in self.meshlines:
+                    if m.splits_basis(basis):
+                        if m.number_of_knots_contained(basis) < m.multiplicity:
+                            self.local_split(basis, m, functions_to_remove, new_functions)
 
         purged_S = [s for s in self.S if s not in functions_to_remove]
-        purged_S = []
-        for s in self.S:
-            if s not in functions_to_remove:
-                purged_S.append(s)
-        # for basis in functions_to_remove:
-        #    print(id(basis))
-        #    self.S.remove(basis)
+
         self.S = purged_S
         self.S += new_functions
 
@@ -201,6 +208,7 @@ class LRSpline(object):
         if self.contains_basis_function(b2):
             self._update_old_basis_function(basis, b2, a2, self.S)
         elif b2 in new_functions:
+
             i = new_functions.index(b2)
             b2_old = new_functions[i]
             b2_old.coefficient = b2_old.weight * b2_old.coefficient + b2.weight * b2.coefficient
@@ -212,7 +220,8 @@ class LRSpline(object):
             new_functions.append(b2)
         functions_to_remove.append(basis)
 
-    def _update_old_basis_function(self, original_basis, new_basis, weight, basis_list) -> None:
+    @staticmethod
+    def _update_old_basis_function(original_basis, new_basis, weight, basis_list) -> None:
         """
         Updates the basis function corresponding to b1 with new weights and coefficients, dependent on
         the basis that was split, and the new basis function.
@@ -330,7 +339,7 @@ class LRSpline(object):
 
                     meshlines_to_remove.append(old_meshline)
 
-        for meshline in meshlines_to_remove:
-            self.meshlines.remove(meshline)
-
+        for old_meshline in meshlines_to_remove:
+            self.meshlines.remove(old_meshline)
+        self.meshlines.append(meshline)
         return False

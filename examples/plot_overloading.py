@@ -34,9 +34,28 @@ def visualize_mesh(LR) -> None:
 
 
 if __name__ == '__main__':
-    LR = init_tensor_product_LR_spline(2, 2, [0, 0, 0, 1, 2, 4, 5, 6, 6, 6], [0, 0, 0, 1, 2, 4, 5, 6, 6, 6])
+    LR = init_tensor_product_LR_spline(1, 1, [0, 0, 1, 2, 3, 4, 5, 6, 6], [0, 0, 1, 2, 3, 4, 5, 6, 6])
+
     visualize_mesh(LR)
 
-    m1 = Meshline(0, 2, constant_value=2, axis=0, multiplicity=3)
+    m1 = Meshline(2, 4, constant_value=2.5, axis=0)
+    m2 = Meshline(2, 4, constant_value=2.5, axis=1)
+    m3 = Meshline(2, 4, constant_value=3.5, axis=1)
+    m4 = Meshline(2, 4, constant_value=3.5, axis=0)
+
     LR.insert_line(m1)
+
+    # visualize_mesh(LR)
+
+    # LR.insert_line(m2)
+    # visualize_mesh(LR)
+    LR.insert_line(m3)
     visualize_mesh(LR)
+    LR.insert_line(m4)
+    visualize_mesh(LR)
+
+    # visualize_mesh(LR)
+    m5 = Meshline(1, 5, constant_value=2.5, axis=0)
+    m6 = Meshline(1, 5, constant_value=3.5, axis=0)
+    LR.insert_line(m5)
+    LR.insert_line(m6)

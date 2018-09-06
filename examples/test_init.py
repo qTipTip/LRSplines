@@ -57,8 +57,10 @@ if __name__ == '__main__':
     ku = [0, 0, 0, 0.5, 1, 1, 1]
     LR = init_tensor_product_LR_spline(d1, d2, ku, ku)
 
-    for i in range(2):
+    random.seed(42)
+    for i in range(5):
         m = LR.get_minimal_span_meshline(random.choice(LR.M), axis=i % 2)
+        print('Inserting line', m)
         LR.insert_line(m)
     visualize_mesh(LR)
     plt.show()
@@ -67,12 +69,12 @@ if __name__ == '__main__':
     # A, b = assemble_mass_and_load(LR, f)
     print('Solving')
     # C = np.linalg.solve(A, b)
-    # for c, b in zip(C, LR.S):
+    #for c, b in zip(C, LR.S):
     #    b.coefficient = c
 
     print('Evaluating')
     N = 30
-    x = np.linspace(0, 1, N, endpoint=False)
+    x = np.linspace(0, 1, N, endpoint=True)
     z = np.zeros((N, N))
     Z = np.zeros((N, N))
     start = timer()
@@ -87,6 +89,7 @@ if __name__ == '__main__':
     fig = plt.figure()
     axs1 = fig.add_subplot(121, projection='3d')
     axs2 = fig.add_subplot(122, projection='3d')
+
     axs1.plot_wireframe(X, Y, z, label='approx')
     axs2.plot_wireframe(X, Y, Z, label='exact')
     plt.legend()

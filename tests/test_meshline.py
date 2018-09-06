@@ -104,3 +104,10 @@ def test_meshline_midpoint():
 
     assert m1.midpoint == (1, 0.5)
     assert m2.midpoint == (0.5, 1)
+
+
+def test_minimal_support_split():
+    B = BSpline(1, 1, [3, 3.5, 4], [2, 3, 4])
+    m = Meshline(2, 4, 2.5, axis=1)
+
+    assert m.splits_basis(B)

@@ -188,3 +188,24 @@ def test_lr_spline_previously_split_functions():
     LR = init_tensor_product_LR_spline(2, 2, [0, 0, 0, 1, 2, 4, 5, 6, 6, 6], [0, 0, 0, 1, 2, 4, 5, 6, 6, 6])
     m = Meshline(1, 5, constant_value=3, axis=0)
     LR.insert_line(m)
+
+
+def test_lr_spline_overloading_count_bilinear():
+    LR = init_tensor_product_LR_spline(1, 1, [0, 0, 1, 2, 3, 4, 5, 6, 6], [0, 0, 1, 2, 3, 4, 5, 6, 6])
+
+    m1 = Meshline(2, 4, constant_value=2.5, axis=0)
+    m2 = Meshline(2, 4, constant_value=2.5, axis=1)
+    m3 = Meshline(2, 4, constant_value=3.5, axis=1)
+    m4 = Meshline(2, 4, constant_value=3.5, axis=0)
+
+    LR.insert_line(m1)
+    LR.insert_line(m2)
+    LR.insert_line(m3)
+    LR.insert_line(m4)
+
+    for e in LR.M:
+        c = Counter(e.supported_b_splines)
+        assert all([count == 1 for count in c.values()])
+
+    for e in LR.M:
+        assert len(e.supported_b_splines) in [4, 5]

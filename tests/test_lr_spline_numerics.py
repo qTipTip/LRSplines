@@ -13,7 +13,7 @@ def test_lr_spline_partition_of_unity(N):
 
     z = np.zeros((N, N))
 
-    for j in range(5):
+    for j in range(12):
         m = LR.get_minimal_span_meshline(np.random.choice(LR.M), axis=j % 1)
         LR.insert_line(m)
         for i in range(N):
