@@ -134,3 +134,7 @@ class Meshline(object):
             return False
 
         return not other.stop < self.start or self.stop < other.start
+
+    def __repr__(self):
+        return "Meshline(start={}, stop={}, constant_value={}, axis={})".format(self.start, self.stop,
+                                                                                self.constant_value, self.axis)

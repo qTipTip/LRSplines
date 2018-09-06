@@ -79,7 +79,7 @@ def _find_knot_interval(x: float, knots: np.ndarray) -> int:
     return np.max(np.argmax(knots > x) - 1, 0)
 
 
-def cached_univariate(degree: int, knots: Vector) -> function:
+def cached_univariate(degree: int, knots: Vector) -> callable:
     """
     Creates a cached version of the _evaluate_univariate_b_spline functions, as in a tensor product structure
     this yields a significant speedup.

@@ -243,16 +243,20 @@ class LRSpline(object):
         :return: L(u, v)
         """
 
-        for e in self.M:
-            if e.contains(u, v):
-                break
-        else:
-            raise ValueError('({}, {}) is not in the domain'.format(u, v))
+        e = self._find_element_containing_point(u, v)
 
         total = 0
         for b in e.supported_b_splines:
             total += b.coefficient * b(u, v)
         return total
+
+    def _find_element_containing_point(self, u, v):
+        for e in self.M:
+            if e.contains(u, v):
+                break
+        else:
+            raise ValueError('({}, {}) is not in the domain'.format(u, v))
+        return e
 
     def merge_meshlines(self, meshline: Meshline) -> bool:
         """
@@ -277,25 +281,32 @@ class LRSpline(object):
                 return True
             if old_meshline.contains(meshline):
                 # meshline is completely contained in the old meshline
+
                 if meshline.multiplicity > old_meshline.multiplicity:
                     if abs(old_meshline.start - meshline.start) < tol and abs(old_meshline.stop - meshline.stop) < tol:
                         # if the new multiplicity is greater than the old one, and the endpoints coincide, keep the
                         # new line and remove the old line.
                         meshlines_to_remove.append(old_meshline)
+
                 elif old_meshline.multiplicity >= meshline.multiplicity:
                     return True
+
             elif old_meshline.overlaps(meshline):
                 if old_meshline.multiplicity < meshline.multiplicity:
+
                     if old_meshline.start > meshline.start:
                         old_meshline.start = meshline.start
                     if old_meshline.stop < meshline.stop:
                         old_meshline.stop = meshline.stop
-                elif old_meshline.midpoint > meshline.multiplicity:
+
+                elif old_meshline.multiplicity > meshline.multiplicity:
+
                     if old_meshline.start < meshline.start:
                         meshline.start = old_meshline.start
                     if old_meshline.stop > meshline.stop:
                         meshline.stop = old_meshline.stop
                 else:
+
                     if old_meshline.start < meshline.start:
                         meshline.start = old_meshline.start
                     if old_meshline.stop > meshline.stop:
