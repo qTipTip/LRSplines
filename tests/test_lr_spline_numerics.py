@@ -4,7 +4,7 @@ import pytest
 from lr_spline import init_tensor_product_LR_spline
 
 
-@pytest.mark.parametrize("N", [20, 40, 60])
+@pytest.mark.parametrize("N", [10, 20, 30])
 def test_lr_spline_partition_of_unity(N):
     LR = init_tensor_product_LR_spline(2, 2, [0, 0, 0, 1, 2, 4, 5, 6, 6, 6], [0, 0, 0, 1, 2, 4, 5, 6, 6, 6])
 
@@ -14,7 +14,7 @@ def test_lr_spline_partition_of_unity(N):
     z = np.zeros((N, N))
 
     for j in range(5):
-        m = LR.get_minimal_span_meshline(LR.M[10], axis=j % 1)
+        m = LR.get_minimal_span_meshline(np.random.choice(LR.M), axis=j % 1)
         LR.insert_line(m)
         for i in range(N):
             for j in range(N):
