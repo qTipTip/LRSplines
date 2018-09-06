@@ -1,3 +1,4 @@
+from lr_spline import init_tensor_product_LR_spline
 from src.element import Element
 
 
@@ -78,3 +79,15 @@ def test_element_equality():
 
     assert e1 == e2
     assert e1 != e3
+
+
+def test_element_overloaded():
+    LR = init_tensor_product_LR_spline(1, 1, [0, 0, 1, 2, 2], [0, 0, 1, 2, 2])
+
+    e = LR.M[2]
+
+    assert not e.is_overloaded()
+
+    e.add_supported_b_spline(LR.S[2])
+
+    assert e.is_overloaded()

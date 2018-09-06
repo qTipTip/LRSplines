@@ -147,3 +147,13 @@ class Element(object):
 
     def __repr__(self):
         return "Element({}, {}, {}, {})".format(self.u_min, self.v_min, self.u_max, self.v_max)
+
+    def is_overloaded(self) -> bool:
+        """
+        Returns true if the number of supported B-splines on this element is greater than (d1 + 1)*(d2 + 1).
+        :return: true if overloaded, false otherwise
+        """
+
+        b = self.supported_b_splines[0]
+
+        return len(self.supported_b_splines) > (b.degree_u + 1) * (b.degree_v + 1)
