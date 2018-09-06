@@ -128,6 +128,13 @@ class LRSpline(object):
         :param meshline: meshline to insert
         """
 
+        # step 0
+        # merge any existing meshlines, if the meshline already exists, we are done and can return early.
+        already_exists = self.merge_meshlines(meshline)
+
+        if already_exists:
+            return
+
         # step 1
         # split B-splines against new meshline
 
@@ -248,3 +255,57 @@ class LRSpline(object):
         for b in e.supported_b_splines:
             total += b.coefficient * b(u, v)
         return total
+
+    def merge_meshlines(self, meshline: Meshline) -> bool:
+        """
+        Tests the meshline against all currently stored meshlines, and combines, updates and deletes
+        meshlines as needed. Returns true if the meshline is already in the list of previous meshlines.
+
+        There are three cases:
+            1. The new meshline overlaps with a previous mesh line, but is not contained by the previous one.
+            2. The new meshline is completely contained in a previous mesh line, (may in fact be equal)
+            3. The new meshline is completely disjoint from all other meshlines.
+        :param meshline: meshline to test against previous meshlines.
+        :return: true if meshline was previously found, false otherwise.
+        """
+        tol = 1.0e-14
+        meshlines_to_remove = []
+        for old_meshline in self.meshlines:
+            if not old_meshline._similar(meshline):
+                # the two meshlines are not comparable, continue.
+                continue
+            if meshline == old_meshline:
+                # meshline already exists, no point in continuing
+                return True
+            if old_meshline.contains(meshline):
+                # meshline is completely contained in the old meshline
+                if meshline.multiplicity > old_meshline:
+                    if abs(old_meshline.start - meshline.start) < tol and abs(old_meshline.stop - meshline.stop) < tol:
+                        # if the new multiplicity is greater than the old one, and the endpoints coincide, keep the
+                        # new line and remove the old line.
+                        meshlines_to_remove.append(old_meshline)
+                elif old_meshline.multiplicity >= meshline.multiplicity:
+                    return True
+            elif old_meshline.overlaps(meshline):
+                if old_meshline.multiplicity < meshline.multiplicity:
+                    if old_meshline.start > meshline.start:
+                        old_meshline.start = meshline.start
+                    if old_meshline.stop < meshline.stop:
+                        old_meshline.stop = meshline.stop
+                elif old_meshline.midpoint > meshline.multiplicity:
+                    if old_meshline.start < meshline.start:
+                        meshline.start = old_meshline.start
+                    if old_meshline.stop > meshline.stop:
+                        meshline.stop = old_meshline.stop
+                else:
+                    if old_meshline.start < meshline.start:
+                        meshline.start = old_meshline.start
+                    if old_meshline.stop > meshline.stop:
+                        meshline.stop = old_meshline.stop
+
+                    meshlines_to_remove.append(old_meshline)
+
+        for meshline in meshlines_to_remove:
+            self.meshlines.remove(meshline)
+
+        return False

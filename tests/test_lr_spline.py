@@ -162,7 +162,7 @@ def test_lr_spline_merge_meshlines_count():
 
     old_number_of_meshlines = len(LR.meshlines)
     m1 = Meshline(0, 2, constant_value=1, axis=0)
-    LR.merge_meshlines(m1)
+    LR.insert_line(meshline=m1)
     new_number_of_meshlines = len(LR.meshlines)
 
     assert old_number_of_meshlines == new_number_of_meshlines
