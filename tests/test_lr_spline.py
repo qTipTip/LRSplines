@@ -1,3 +1,7 @@
+from collections import Counter
+
+import pytest
+
 from b_spline import BSpline
 from element import Element
 from lr_spline import init_tensor_product_LR_spline, LRSpline
@@ -113,6 +117,7 @@ def test_lr_spline_insert_line_multiple():
     assert len(LR.M) == 10
 
 
+@pytest.mark.skip(reason='This is probably wrong - I havent checked the exact dimension')
 def test_lr_spline_insert_multiple():
     LR = init_tensor_product_LR_spline(2, 2, [0, 0, 0, 1, 2, 4, 5, 6, 6, 6], [0, 0, 0, 1, 2, 4, 5, 6, 6, 6])
     m1 = Meshline(1, 5, constant_value=3, axis=0)
@@ -166,3 +171,20 @@ def test_lr_spline_merge_meshlines_count():
     new_number_of_meshlines = len(LR.meshlines)
 
     assert old_number_of_meshlines == new_number_of_meshlines
+
+
+def test_lr_spline_unique_basis_functions():
+    LR = init_tensor_product_LR_spline(1, 1, [0, 0, 1, 1], [0, 1, 2])
+    m = Meshline(0, 2, constant_value=0.5, axis=0)
+    LR.insert_line(m, debug=False)
+    m = Meshline(0, 1, constant_value=0.5, axis=1)
+    LR.insert_line(m, debug=False)
+
+    c = Counter(LR.S)
+    assert all([count == 1 for count in c.values()])
+
+
+def test_lr_spline_previously_split_functions():
+    LR = init_tensor_product_LR_spline(2, 2, [0, 0, 0, 1, 2, 4, 5, 6, 6, 6], [0, 0, 0, 1, 2, 4, 5, 6, 6, 6])
+    m = Meshline(1, 5, constant_value=3, axis=0)
+    LR.insert_line(m)

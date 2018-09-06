@@ -178,7 +178,7 @@ class LRSpline(object):
         # TODO: This implementation is preliminary, and possibly very slow.
         for element in self.M:
             element.supported_b_splines = []
-
+        for basis in self.S:
             basis.elements_of_support = []
             for element in self.M:
                 if basis.add_to_support_if_intersects(element):
