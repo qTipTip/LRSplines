@@ -83,3 +83,24 @@ def test_meshline_equals():
     assert m1 == m1
     assert m1 != m2
     assert m1 != m3
+
+
+def test_meshline_overlaps():
+    m1 = Meshline(0, 1, constant_value=0.5, axis=1)
+    m2 = Meshline(0, 2, constant_value=0.5, axis=1)
+    m3 = Meshline(0.5, 1.5, constant_value=0.5, axis=1)
+    m4 = Meshline(0.5, 1.5, constant_value=0.5, axis=0)
+    m5 = Meshline(0.5, 1.5, constant_value=0.4, axis=1)
+
+    assert m1.overlaps(m2)
+    assert m1.overlaps(m3)
+    assert not m1.overlaps(m4)
+    assert not m1.overlaps(m5)
+
+
+def test_meshline_midpoint():
+    m1 = Meshline(0, 2, constant_value=0.5, axis=1)
+    m2 = Meshline(0, 2, constant_value=0.5, axis=0)
+
+    assert m1.midpoint == (1, 0.5)
+    assert m2.midpoint == (0.5, 1)

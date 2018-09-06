@@ -133,4 +133,4 @@ class Meshline(object):
         if not self._similar(other):
             return False
 
-        return self.start <= other.stop and self.stop <= other.start
+        return not other.stop < self.start or self.stop < other.start
