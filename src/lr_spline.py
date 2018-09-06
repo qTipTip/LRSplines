@@ -104,7 +104,7 @@ class LRSpline(object):
 
         return Meshline(smallest_start, smallest_stop, constant_value, axis)
 
-    def insert_line(self, meshline: Meshline) -> None:
+    def insert_line(self, meshline: Meshline, debug=False) -> None:
         """
         Inserts a line in the mesh, splitting where necessary.
         Follows a four step procedure:
@@ -152,6 +152,10 @@ class LRSpline(object):
                         self.local_split(basis, m, functions_to_remove, new_functions)
 
         purged_S = [s for s in self.S if s not in functions_to_remove]
+        purged_S = []
+        for s in self.S:
+            if s not in functions_to_remove:
+                purged_S.append(s)
         # for basis in functions_to_remove:
         #    print(id(basis))
         #    self.S.remove(basis)
@@ -174,7 +178,7 @@ class LRSpline(object):
         # TODO: This implementation is preliminary, and possibly very slow.
         for element in self.M:
             element.supported_b_splines = []
-        for basis in self.S:
+
             basis.elements_of_support = []
             for element in self.M:
                 if basis.add_to_support_if_intersects(element):
@@ -182,21 +186,33 @@ class LRSpline(object):
 
     def local_split(self, basis, m, functions_to_remove, new_functions):
         b1, b2, a1, a2 = split_single_basis_function(m, basis, return_weights=True)
-        if b1 in self.S:
-            self._update_old_basis_function(basis, b1, a1)
+        if self.contains_basis_function(b1):
+            self._update_old_basis_function(basis, b1, a1, self.S)
+        elif b1 in new_functions:
+            i = new_functions.index(b1)
+            b1_old = new_functions[i]
+            b1_old.coefficient = b1_old.weight * b1_old.coefficient + b1.weight * b1.coefficient
+            b1_old.weight = b1_old.weight + b1.weight
+            new_functions[i] = b1_old
         else:
             b1.coefficient = basis.coefficient
             b1.weight = a1 * basis.weight
             new_functions.append(b1)
-        if b2 in self.S:
-            self._update_old_basis_function(basis, b2, a2)
+        if self.contains_basis_function(b2):
+            self._update_old_basis_function(basis, b2, a2, self.S)
+        elif b2 in new_functions:
+            i = new_functions.index(b2)
+            b2_old = new_functions[i]
+            b2_old.coefficient = b2_old.weight * b2_old.coefficient + b2.weight * b2.coefficient
+            b2_old.weight = b2_old.weight + b2.weight
+            new_functions[i] = b2_old
         else:
             b2.coefficient = basis.coefficient
             b2.weight = a2 * basis.weight
             new_functions.append(b2)
         functions_to_remove.append(basis)
 
-    def _update_old_basis_function(self, original_basis, new_basis, weight) -> None:
+    def _update_old_basis_function(self, original_basis, new_basis, weight, basis_list) -> None:
         """
         Updates the basis function corresponding to b1 with new weights and coefficients, dependent on
         the basis that was split, and the new basis function.
@@ -204,11 +220,11 @@ class LRSpline(object):
         :param new_basis: the `new basis` originating from splitting `original_basis`, which is already present in self.S
         :return:
         """
-        i = self.S.index(new_basis)
-        self.S[i].coefficient = (self.S[
-                                     i].coefficient * new_basis.weight + original_basis.coefficient * original_basis.weight * weight) / (
-                                        new_basis.weight + weight * original_basis.weight)
-        self.S[i].weight = new_basis.weight + weight * original_basis.weight
+        i = basis_list.index(new_basis)
+        basis_list[i].coefficient = (basis_list[
+                                         i].coefficient * new_basis.weight + original_basis.coefficient * original_basis.weight * weight) / (
+                                            new_basis.weight + weight * original_basis.weight)
+        basis_list[i].weight = new_basis.weight + weight * original_basis.weight
 
     def contains_basis_function(self, B: BSpline) -> bool:
         """

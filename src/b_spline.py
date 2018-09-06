@@ -179,3 +179,6 @@ class BSpline(object):
         """
 
         return np.average(self.knots_u), np.average(self.knots_v)
+
+    def __hash__(self):
+        return hash(tuple(self.knots_v)) * self.degree_u + hash(tuple(self.knots_u)) * self.degree_v
