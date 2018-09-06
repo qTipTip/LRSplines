@@ -1,4 +1,5 @@
 import typing
+from functools import lru_cache
 
 import numpy as np
 
@@ -78,6 +79,22 @@ def _find_knot_interval(x: float, knots: np.ndarray) -> int:
     return np.max(np.argmax(knots > x) - 1, 0)
 
 
+def cached_univariate(degree: int, knots: Vector) -> function:
+    """
+    Creates a cached version of the _evaluate_univariate_b_spline functions, as in a tensor product structure
+    this yields a significant speedup.
+    :param degree: polynomial degree
+    :param knots: knot vector
+    :return: cached univariate evaluation.
+    """
+
+    @lru_cache(maxsize=128)
+    def cached_evaluation(x):
+        return _evaluate_univariate_b_spline(x, knots, degree)
+
+    return cached_evaluation
+
+
 class BSpline(object):
     """
     Represents a single weighted tensor product B-spline with associated methods and fields.
@@ -102,6 +119,10 @@ class BSpline(object):
 
         self.elements_of_support: ElementVector = []
 
+        # for cached calls
+        self._univariate_u = cached_univariate(degree_u, knots_u)
+        self._univariate_v = cached_univariate(degree_v, knots_v)
+
     def __call__(self, u: float, v: float) -> float:
         """
         Evaluates the BSpline at the parametric point (u, v).
@@ -110,10 +131,7 @@ class BSpline(object):
         :return: B(u, v)
         """
 
-        return self.weight * _evaluate_univariate_b_spline(u, self.knots_u,
-                                                           self.degree_u) * _evaluate_univariate_b_spline(v,
-                                                                                                          self.knots_v,
-                                                                                                          self.degree_v)
+        return self.weight * self._univariate_u(u) * self._univariate_v(v)
 
     def add_to_support_if_intersects(self, element: "Element") -> bool:
         """
