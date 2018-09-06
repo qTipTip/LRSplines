@@ -85,13 +85,13 @@ class Meshline(object):
         :return: midpoint of the mesh line.
         """
 
-        a = (self.stop - self.start) / 2
+        a = (self.stop - self.start) / 2 + self.start
         b = self.constant_value
 
         if self.axis == 0:
-            return (b, a)
+            return b, a
         else:
-            return (a, b)
+            return a, b
 
     def _similar(self, other: "Meshline") -> bool:
         """
