@@ -62,3 +62,24 @@ def test_meshline_number_of_knots():
 
     assert m1.number_of_knots_contained(b1) == 1
     assert m2.number_of_knots_contained(b1) == 0
+
+
+def test_meshline_contains():
+    m1 = Meshline(0, 2, constant_value=1, axis=0)
+    m2 = Meshline(0.1, 1.9, constant_value=1, axis=0)
+    m3 = Meshline(0.1, 1.9, constant_value=1.2, axis=0)
+    m4 = Meshline(0.1, 1.9, constant_value=1, axis=1)
+
+    assert m1.contains(m2)
+    assert not m1.contains(m3)
+    assert not m1.contains(m4)
+
+
+def test_meshline_equals():
+    m1 = Meshline(0.1, 1.9, constant_value=1, axis=0)
+    m2 = Meshline(0.1, 1.9, constant_value=1.2, axis=0)
+    m3 = Meshline(0.1, 1.9, constant_value=1, axis=1)
+
+    assert m1 == m1
+    assert m1 != m2
+    assert m1 != m3

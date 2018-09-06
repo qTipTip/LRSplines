@@ -92,3 +92,45 @@ class Meshline(object):
             return (b, a)
         else:
             return (a, b)
+
+    def _similar(self, other: "Meshline") -> bool:
+        """
+        Returns true if the two meshlines have the same direction and the same constant_value, but not neccesarily the same endpoints or multiplicity.
+        :param other: meshline to compare against
+        :return: true or false
+        """
+        tol = 1.0e-14
+        return self.axis == other.axis and abs(self.constant_value - other.constant_value) < tol
+
+    def __eq__(self, other: "Meshline") -> bool:
+        """
+        Returns true if the two meshlines have the same direction, same constant value, and same endpoints and multiplicity.
+        :param other: meshline to compare against
+        :return: true or false
+        """
+        tol = 1.0e-14
+        return self._similar(other) and abs(self.start - other.start) < tol and abs(
+            self.stop - other.stop) < tol and self.multiplicity == other.multiplicity
+
+    def contains(self, other: "Meshline") -> bool:
+        """
+        Returns true if meshline is completely contained in this meshline.
+        :param other: meshline to check if is contained
+        :return: true if other is contained, false otherwise
+        """
+
+        if not self._similar(other):
+            return False
+
+        return self.start <= other.start and self.stop >= other.stop
+
+    def overlaps(self, other: "Meshline") -> bool:
+        """
+        Returns true if the two meshlines overlap.
+        :param other: meshline to check for overlap
+        :return: true if the meshlines overlap, false otherwise
+        """
+        if not self._similar(other):
+            return False
+
+        return self.start <= other.stop and self.stop <= other.start
