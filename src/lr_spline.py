@@ -78,19 +78,17 @@ class LRSpline(object):
 
     def refine_by_element_minimal(self, e: Element) -> None:
         """
-        Refines the LRSpline by finding and inserting the smallest possible meshline that splits the support of at least one
-        BSpline.
-        :param e: element to refine
+        Refines the LRSpline by finding and inserting the smallest possible meshline that splits the support of at
+        least one BSpline. :param e: element to refine
         """
         raise NotImplementedError('LRSpline.{} is not implemented yet'.format(self.refine_by_element_minimal.__name__))
 
     @staticmethod
     def get_minimal_span_meshline(e: Element, axis=0) -> Meshline:
         """
-        Finds the shortest possible meshline in direction prescribed by axis that splits at least one supported B-spline on the element.
-        :param e: element to refine by
-        :param axis: direction to look for split, 0 vertical, 1 horizontal
-        :return: minimal span meshline
+        Finds the shortest possible meshline in direction prescribed by axis that splits at least one supported
+        B-spline on the element. :param e: element to refine by :param axis: direction to look for split, 0 vertical,
+        1 horizontal :return: minimal span meshline
         """
 
         smallest_start = None
@@ -130,9 +128,9 @@ class LRSpline(object):
 
         # step 0
         # merge any existing meshlines, if the meshline already exists, we are done and can return early.
-        already_exists = self.merge_meshlines(meshline)
+        meshline_already_exists = self.merge_meshlines(meshline)
 
-        if already_exists:
+        if meshline_already_exists:
             return
 
         # step 1
@@ -279,7 +277,7 @@ class LRSpline(object):
                 return True
             if old_meshline.contains(meshline):
                 # meshline is completely contained in the old meshline
-                if meshline.multiplicity > old_meshline:
+                if meshline.multiplicity > old_meshline.multiplicity:
                     if abs(old_meshline.start - meshline.start) < tol and abs(old_meshline.stop - meshline.stop) < tol:
                         # if the new multiplicity is greater than the old one, and the endpoints coincide, keep the
                         # new line and remove the old line.
