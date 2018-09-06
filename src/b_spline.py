@@ -152,3 +152,12 @@ class BSpline(object):
         """
         return np.allclose(self.knots_u, other.knots_u, atol=1.0e-14) and np.allclose(self.knots_v, other.knots_v,
                                                                                       atol=1.0e-14)
+
+    @property
+    def knot_average(self) -> typing.Tuple[float, float]:
+        """
+        Returns the knot average for this BSpline (the Greville point).
+        :return: the knot average (u, v).
+        """
+
+        return np.average(self.knots_u), np.average(self.knots_v)
