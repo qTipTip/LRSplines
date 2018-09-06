@@ -155,3 +155,14 @@ def test_lr_spline_cleanup():
 
     assert all(e in b1.elements_of_support for e in elements[0:4])
     assert all(e in b2.elements_of_support for e in elements[2:])
+
+
+def test_lr_spline_merge_meshlines_count():
+    LR = init_tensor_product_LR_spline(1, 1, [0, 1, 2], [0, 1, 2])
+
+    old_number_of_meshlines = len(LR.meshlines)
+    m1 = Meshline(0, 2, constant_value=1, axis=0)
+    LR.merge_meshlines(m1)
+    new_number_of_meshlines = len(LR.meshlines)
+
+    assert old_number_of_meshlines == new_number_of_meshlines
