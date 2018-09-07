@@ -83,7 +83,7 @@ class Element(object):
 
         raise NotImplementedError('Updating of supported basis functions is not implemented yet')
 
-    def split(self, axis: int, split_value: float):
+    def split(self, axis: int, split_value: float) -> "Element":
         """
         Splits the element into two, resizing into the left half, and returning the right half.
         :return: right half of element.
@@ -158,5 +158,6 @@ class Element(object):
 
         return len(self.supported_b_splines) > (b.degree_u + 1) * (b.degree_v + 1)
 
+    # TODO: Now that I think about it, this hash may change during the lifetime of the object, due to the Element.split method.
     def __hash__(self):
         return hash(tuple([self.u_min, self.u_max, self.v_min, self.v_max]))
