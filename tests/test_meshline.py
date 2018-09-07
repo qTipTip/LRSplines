@@ -111,3 +111,10 @@ def test_minimal_support_split():
     m = Meshline(2, 4, 2.5, axis=1)
 
     assert m.splits_basis(B)
+
+
+def test_meshline_overlaps_disjoint():
+    m1 = Meshline(start=0, stop=2, constant_value=3, axis=0)
+    m2 = Meshline(start=5, stop=6, constant_value=3, axis=0)
+
+    assert not m1.overlaps(m2)
