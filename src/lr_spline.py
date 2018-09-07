@@ -84,7 +84,7 @@ class LRSpline(object):
         raise NotImplementedError('LRSpline.{} is not implemented yet'.format(self.refine_by_element_minimal.__name__))
 
     @staticmethod
-    def get_minimal_span_meshline(e: Element, axis=0) -> Meshline:
+    def get_minimal_span_meshline(e: Element, axis) -> Meshline:
         """
         Finds the shortest possible meshline in direction prescribed by axis that splits at least one supported
         B-spline on the element. :param e: element to refine by :param axis: direction to look for split, 0 vertical,
@@ -102,7 +102,8 @@ class LRSpline(object):
 
         constant_value = e.midpoint[axis]
 
-        return Meshline(smallest_start, smallest_stop, constant_value, axis)
+        new_meshline = Meshline(smallest_start, smallest_stop, constant_value, axis)
+        return new_meshline
 
     def insert_line(self, meshline: Meshline, debug=False) -> None:
         """
@@ -149,6 +150,7 @@ class LRSpline(object):
         self.S = purged_S
         # step 2
         # split new B-splines against old meshlines
+        self.meshlines.append(meshline)
 
         # for basis in new_functions:
         while len(new_functions) > 0:
@@ -171,7 +173,6 @@ class LRSpline(object):
                 new_elements.append(element.split(axis=meshline.axis, split_value=meshline.constant_value))
 
         self.M += new_elements
-        self.meshlines.append(meshline)
 
         # step 4
         # clean up, make sure all basis functions points to correct elements
@@ -184,6 +185,10 @@ class LRSpline(object):
             for element in self.M:
                 if basis.add_to_support_if_intersects(element):
                     element.add_supported_b_spline(basis)
+
+    def local_split_recursive(self, basis, m, functions_to_remove, new_functions, multiplicity):
+        # TODO: Implement a recursive split, based on multiplicity. Might be the cause of errors.
+        pass
 
     def local_split(self, basis, m, functions_to_remove, new_functions):
         b1, b2, a1, a2 = split_single_basis_function(m, basis, return_weights=True)
@@ -202,7 +207,6 @@ class LRSpline(object):
         if self.contains_basis_function(b2):
             self._update_old_basis_function(basis, b2, a2, self.S)
         elif b2 in new_functions:
-
             i = new_functions.index(b2)
             b2_old = new_functions[i]
             b2_old.coefficient = b2_old.weight * b2_old.coefficient + b2.weight * b2.coefficient
@@ -291,6 +295,7 @@ class LRSpline(object):
         """
         tol = 1.0e-14
         meshlines_to_remove = []
+
         for old_meshline in self.meshlines:
             if not old_meshline._similar(meshline):
                 # the two meshlines are not comparable, continue.
@@ -312,20 +317,16 @@ class LRSpline(object):
 
             elif old_meshline.overlaps(meshline):
                 if old_meshline.multiplicity < meshline.multiplicity:
-
                     if old_meshline.start > meshline.start:
                         old_meshline.start = meshline.start
                     if old_meshline.stop < meshline.stop:
                         old_meshline.stop = meshline.stop
-
                 elif old_meshline.multiplicity > meshline.multiplicity:
-
                     if old_meshline.start < meshline.start:
                         meshline.start = old_meshline.start
                     if old_meshline.stop > meshline.stop:
                         meshline.stop = old_meshline.stop
                 else:
-
                     if old_meshline.start < meshline.start:
                         meshline.start = old_meshline.start
                     if old_meshline.stop > meshline.stop:
@@ -335,5 +336,4 @@ class LRSpline(object):
 
         for old_meshline in meshlines_to_remove:
             self.meshlines.remove(old_meshline)
-        self.meshlines.append(meshline)
         return False
