@@ -157,3 +157,6 @@ class Element(object):
         b = self.supported_b_splines[0]
 
         return len(self.supported_b_splines) > (b.degree_u + 1) * (b.degree_v + 1)
+
+    def __hash__(self):
+        return hash(tuple([self.u_min, self.u_max, self.v_min, self.v_max]))
