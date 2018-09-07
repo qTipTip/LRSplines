@@ -3,8 +3,8 @@ from typing import List
 
 import numpy as np
 
-from aux_split_functions import split_single_basis_function
-from meshline import Meshline
+from src.aux_split_functions import split_single_basis_function
+from src.meshline import Meshline
 from src.b_spline import BSpline
 from src.element import Element
 
@@ -139,35 +139,29 @@ class LRSpline(object):
         new_functions = []
         functions_to_remove = []
         for basis in self.S:
-            # debug
-            if basis == BSpline(1, 1, [3, 3.5, 4], [2, 3, 4]):
-                if meshline.splits_basis(basis):
-                    if meshline.number_of_knots_contained(basis) < meshline.multiplicity:
-                        self.local_split(basis, meshline, functions_to_remove, new_functions)
-            else:
-                if meshline.splits_basis(basis):
-                    if meshline.number_of_knots_contained(basis) < meshline.multiplicity:
-                        self.local_split(basis, meshline, functions_to_remove, new_functions)
-
-        # step 2
-        # split new B-splines against old meshlines
-        for basis in new_functions:
-            # debug
-            if basis == BSpline(1, 1, [3, 3.5, 4], [2, 3, 4]):
-                for m in self.meshlines:
-                    if m.splits_basis(basis):
-                        if m.number_of_knots_contained(basis) < m.multiplicity:
-                            self.local_split(basis, m, functions_to_remove, new_functions)
-            else:
-                for m in self.meshlines:
-                    if m.splits_basis(basis):
-                        if m.number_of_knots_contained(basis) < m.multiplicity:
-                            self.local_split(basis, m, functions_to_remove, new_functions)
+            # debug BSpline(1, 1, [3, 3.5, 4], [2, 3, 4])
+            if meshline.splits_basis(basis):
+                if meshline.number_of_knots_contained(basis) < meshline.multiplicity:
+                    self.local_split(basis, meshline, functions_to_remove, new_functions)
 
         purged_S = [s for s in self.S if s not in functions_to_remove]
 
         self.S = purged_S
-        self.S += new_functions
+        # step 2
+        # split new B-splines against old meshlines
+
+        # for basis in new_functions:
+        while len(new_functions) > 0:
+            basis = new_functions.pop()
+            split_more = False
+            for m in self.meshlines:
+                if m.splits_basis(basis):
+                    if m.number_of_knots_contained(basis) < m.multiplicity:
+                        split_more = True
+                        self.local_split(basis, m, functions_to_remove, new_functions)
+                        break
+            if not split_more:
+                self.S.append(basis)
 
         # step 3
         # split all marked elements against new meshline
@@ -296,8 +290,7 @@ class LRSpline(object):
         :return: true if meshline was previously found, false otherwise.
         """
         tol = 1.0e-14
-        meshlines_to_remove = []
-        for old_meshline in self.meshlines:
+        meshlines_to_remove = []        for old_meshline in self.meshlines:
             if not old_meshline._similar(meshline):
                 # the two meshlines are not comparable, continue.
                 continue

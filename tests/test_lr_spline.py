@@ -1,11 +1,10 @@
+from src.b_spline import BSpline
+from src.element import Element
+from src.lr_spline import init_tensor_product_LR_spline, LRSpline
+from src.meshline import Meshline
 from collections import Counter
 
 import pytest
-
-from b_spline import BSpline
-from element import Element
-from lr_spline import init_tensor_product_LR_spline, LRSpline
-from meshline import Meshline
 
 
 def test_lr_spline_minimal_span_line():
@@ -193,16 +192,23 @@ def test_lr_spline_previously_split_functions():
 def test_lr_spline_overloading_count_bilinear():
     LR = init_tensor_product_LR_spline(1, 1, [0, 0, 1, 2, 3, 4, 5, 6, 6], [0, 0, 1, 2, 3, 4, 5, 6, 6])
 
-    m1 = Meshline(2, 4, constant_value=2.5, axis=0)
-    m2 = Meshline(2, 4, constant_value=2.5, axis=1)
-    m3 = Meshline(2, 4, constant_value=3.5, axis=1)
-    m4 = Meshline(2, 4, constant_value=3.5, axis=0)
+    m1 = Meshline(2, 4, constant_value=3.5, axis=0)
+    m2 = Meshline(2, 4, constant_value=2.5, axis=0)
+    m3 = Meshline(2, 4, constant_value=2.5, axis=1)
+    m4 = Meshline(2, 4, constant_value=3.5, axis=1)
 
-    LR.insert_line(m1)
-    LR.insert_line(m2)
-    LR.insert_line(m3)
-    LR.insert_line(m4)
-
+    # culprit = 3, 3.5, 4 x 2 3 4
+    print(1)
+    LR.insert_line(m1, debug=True)
+    print(2)
+    LR.insert_line(m2, debug=True)
+    print(3)
+    LR.insert_line(m3, debug=True)
+    print(4)
+    LR.insert_line(m4, debug=True)
+    culprit = BSpline(1, 1, [3, 3.5, 4], [2, 3, 4])
+    if culprit in LR.S:
+        print('Why are you here')
     for e in LR.M:
         c = Counter(e.supported_b_splines)
         assert all([count == 1 for count in c.values()])

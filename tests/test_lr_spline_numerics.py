@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from lr_spline import init_tensor_product_LR_spline
+from src.lr_spline import init_tensor_product_LR_spline
 
 
 @pytest.mark.parametrize("N", [10, 20, 30])

@@ -1,4 +1,4 @@
-from lr_spline import init_tensor_product_LR_spline
+from src.lr_spline import init_tensor_product_LR_spline
 from src.element import Element
 
 
