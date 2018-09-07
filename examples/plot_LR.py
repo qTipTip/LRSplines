@@ -3,10 +3,11 @@ from timeit import default_timer as timer
 
 import matplotlib.patches as plp
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import scipy.integrate as integrate
 
-from lr_spline import init_tensor_product_LR_spline
+from src.lr_spline import init_tensor_product_LR_spline
 
 
 def f(x, y):
@@ -45,6 +46,7 @@ def assemble_mass_and_load(LR, f):
     A = np.zeros((n, n))
     b = np.zeros(n)
     for j, bj in enumerate(LR.S):
+        print('{}/{}'.format(j, len(LR.S)))
         for i, bi in enumerate(LR.S):
             A[i, j] = integrate.dblquad(lambda x, y: bi(x, y) * bj(x, y), 0, 1, lambda x: 0, lambda x: 1)[0]
         b[j] = integrate.dblquad(lambda x, y: bj(x, y) * f(x, y), 0, 1, lambda x: 0, lambda x: 1)[0]
@@ -58,42 +60,33 @@ if __name__ == '__main__':
     LR = init_tensor_product_LR_spline(d1, d2, ku, ku)
 
     random.seed(42)
-    for i in range(5):
+    for i in range(13):
         m = LR.get_minimal_span_meshline(random.choice(LR.M), axis=i % 2)
         print('Inserting line', m)
         LR.insert_line(m)
     visualize_mesh(LR)
-    plt.show()
+    print('dim(S) = ', len(LR.S))
+    A, b = assemble_mass_and_load(LR, f)
+    c = np.linalg.solve(A, b)
+    for i in range(len(LR.S)):
+        LR.S[i].coefficient = c[i]
 
-    print('Assembling')
-    # A, b = assemble_mass_and_load(LR, f)
-    print('Solving')
-    # C = np.linalg.solve(A, b)
-    #for c, b in zip(C, LR.S):
-    #    b.coefficient = c
-
-    print('Evaluating')
     N = 30
-    x = np.linspace(0, 1, N, endpoint=True)
+    x = np.linspace(0, 1, N, endpoint=False)
     z = np.zeros((N, N))
     Z = np.zeros((N, N))
     start = timer()
     for i in range(N):
         for j in range(N):
             z[i, j] = LR(x[i], x[j])
-            Z[i, j] = f(x[i], x[j])
     print('Eval took seconds', timer() - start)
 
     X, Y = np.meshgrid(x, x)
 
     fig = plt.figure()
-    axs1 = fig.add_subplot(121, projection='3d')
-    axs2 = fig.add_subplot(122, projection='3d')
+    axs1 = Axes3D(fig)
 
-    axs1.plot_wireframe(X, Y, z, label='approx')
-    axs2.plot_wireframe(X, Y, Z, label='exact')
+    axs1.plot_wireframe(X, Y, z, label='LR')
     plt.legend()
     plt.show()
 
-    # plt.spy(markersize=5)
-    # plt.show()

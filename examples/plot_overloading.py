@@ -1,8 +1,8 @@
 import matplotlib.patches as plp
 import matplotlib.pyplot as plt
 
-from lr_spline import init_tensor_product_LR_spline
-from meshline import Meshline
+from src.lr_spline import init_tensor_product_LR_spline
+from src.meshline import Meshline
 
 
 def visualize_mesh(LR) -> None:
@@ -47,7 +47,7 @@ if __name__ == '__main__':
 
     # visualize_mesh(LR)
 
-    # LR.insert_line(m2)
+    LR.insert_line(m2)
     # visualize_mesh(LR)
     LR.insert_line(m3)
     visualize_mesh(LR)
