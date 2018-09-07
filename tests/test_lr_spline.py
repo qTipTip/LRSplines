@@ -198,17 +198,11 @@ def test_lr_spline_overloading_count_bilinear():
     m4 = Meshline(2, 4, constant_value=3.5, axis=1)
 
     # culprit = 3, 3.5, 4 x 2 3 4
-    print(1)
     LR.insert_line(m1, debug=True)
-    print(2)
     LR.insert_line(m2, debug=True)
-    print(3)
     LR.insert_line(m3, debug=True)
-    print(4)
     LR.insert_line(m4, debug=True)
-    culprit = BSpline(1, 1, [3, 3.5, 4], [2, 3, 4])
-    if culprit in LR.S:
-        print('Why are you here')
+
     for e in LR.M:
         c = Counter(e.supported_b_splines)
         assert all([count == 1 for count in c.values()])

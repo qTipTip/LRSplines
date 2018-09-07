@@ -290,7 +290,8 @@ class LRSpline(object):
         :return: true if meshline was previously found, false otherwise.
         """
         tol = 1.0e-14
-        meshlines_to_remove = []        for old_meshline in self.meshlines:
+        meshlines_to_remove = []
+        for old_meshline in self.meshlines:
             if not old_meshline._similar(meshline):
                 # the two meshlines are not comparable, continue.
                 continue
