@@ -144,11 +144,9 @@ class LRSpline(object):
 
         # step 1
         # split B-splines against new meshline
-
         new_functions = []
         functions_to_remove = []
         for basis in self.S:
-            # debug BSpline(1, 1, [3, 3.5, 4], [2, 3, 4])
             if meshline.splits_basis(basis):
                 if meshline.number_of_knots_contained(basis) < meshline.multiplicity:
                     self.local_split(basis, meshline, functions_to_remove, new_functions)
@@ -199,48 +197,32 @@ class LRSpline(object):
         pass
 
     def local_split(self, basis, m, functions_to_remove, new_functions):
-        b1, b2, a1, a2 = split_single_basis_function(m, basis, return_weights=True)
+        b1, b2 = split_single_basis_function(m, basis)
         if self.contains_basis_function(b1):
-            self._update_old_basis_function(basis, b1, a1, self.S)
+            self._update_old_basis_function(b1, self.S)
         elif b1 in new_functions:
-            i = new_functions.index(b1)
-            b1_old = new_functions[i]
-            b1_old.coefficient = b1_old.weight * b1_old.coefficient + b1.weight * b1.coefficient
-            b1_old.weight = b1_old.weight + b1.weight
-            new_functions[i] = b1_old
+            self._update_old_basis_function(b1, new_functions)
         else:
-            b1.coefficient = basis.coefficient
-            b1.weight = a1 * basis.weight
             new_functions.append(b1)
         if self.contains_basis_function(b2):
-            self._update_old_basis_function(basis, b2, a2, self.S)
+            self._update_old_basis_function(b2, self.S)
         elif b2 in new_functions:
-            i = new_functions.index(b2)
-            b2_old = new_functions[i]
-            b2_old.coefficient = b2_old.weight * b2_old.coefficient + b2.weight * b2.coefficient
-            b2_old.weight = b2_old.weight + b2.weight
-            new_functions[i] = b2_old
+            self._update_old_basis_function(b2, new_functions)
         else:
-            b2.coefficient = basis.coefficient
-            b2.weight = a2 * basis.weight
             new_functions.append(b2)
         functions_to_remove.append(basis)
 
     @staticmethod
-    def _update_old_basis_function(original_basis, new_basis, weight, basis_list) -> None:
+    def _update_old_basis_function(new_basis, basis_list) -> None:
         """
         Updates the basis function corresponding to b1 with new weights and coefficients, dependent on
         the basis that was split, and the new basis function.
 
-        :param original_basis: the orginal basis function that was split, yielding `new basis`
         :param new_basis: the `new basis` originating from splitting `original_basis`, which is already present in self.S
         :return:
         """
         i = basis_list.index(new_basis)
-        basis_list[i].coefficient = (basis_list[
-                                         i].coefficient * new_basis.weight + original_basis.coefficient * original_basis.weight * weight) / (
-                                            new_basis.weight + weight * original_basis.weight)
-        basis_list[i].weight = new_basis.weight + weight * original_basis.weight
+        basis_list[i].update_weights(new_basis)
 
     def contains_basis_function(self, B: BSpline) -> bool:
         """

@@ -191,5 +191,13 @@ class BSpline(object):
 
         return np.average(self.knots_u), np.average(self.knots_v)
 
+    def update_weights(self, other: "BSpline") -> None:
+        """
+        Updates the weights during splitting.
+        """
+        w = self.weight + other.weight
+        self.coefficient = (self.coefficient * self.weight + other.coefficient * other.weight) / w
+        self.weight = w
+
     def __hash__(self):
         return hash(tuple(self.knots_v)) * self.degree_u + hash(tuple(self.knots_u)) * self.degree_v
