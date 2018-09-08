@@ -71,7 +71,10 @@ class Element(object):
 
         :param b_spline: B-spline to remove
         """
-        self.supported_b_splines.remove(b_spline)
+        if self.has_supported_b_spline(b_spline):
+            self.supported_b_splines.remove(b_spline)
+            return True
+        return False
 
     def has_supported_b_spline(self, b_spline) -> bool:
         """
@@ -122,8 +125,6 @@ class Element(object):
                 supported_basis_to_remove.append(basis)
                 basis.remove_from_support(self)
 
-        for basis_to_remove in supported_basis_to_remove:
-            self.remove_supported_b_spline(basis_to_remove)
         return new_element
 
     @property

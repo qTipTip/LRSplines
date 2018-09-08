@@ -200,12 +200,15 @@ class LRSpline(object):
             self._update_old_basis_function(b1, new_functions)
         else:
             new_functions.append(b1)
+            # self._update_support(b1, basis.elements_of_support)
         if self.contains_basis_function(b2):
             self._update_old_basis_function(b2, self.S)
         elif b2 in new_functions:
             self._update_old_basis_function(b2, new_functions)
         else:
             new_functions.append(b2)
+            # self._update_support(b1, basis.elements_of_support)
+
         functions_to_remove.append(basis)
 
     @staticmethod
@@ -329,3 +332,18 @@ class LRSpline(object):
         for old_meshline in meshlines_to_remove:
             self.meshlines.remove(old_meshline)
         return False, meshline
+
+    def _update_support(self, b_spline: BSpline, elements: List[Element]) -> None:
+        """
+        Updates the list of supported BSplines in elements, and the list of elements of support in the BSpline.
+
+        :param b_spline: b_spline to update
+        :param elements: elements to update
+        :return: None
+        """
+
+        for element in elements:
+            if b_spline.add_to_support_if_intersects(element):
+                element.add_supported_b_spline(b_spline)
+            else:
+                element.remove_supported_b_spline(b_spline)
