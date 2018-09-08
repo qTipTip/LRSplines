@@ -192,10 +192,6 @@ class LRSpline(object):
                 if basis.add_to_support_if_intersects(element):
                     element.add_supported_b_spline(basis)
 
-    def local_split_recursive(self, basis, m, functions_to_remove, new_functions, multiplicity):
-        # TODO: Implement a recursive split, based on multiplicity. Might be the cause of errors.
-        pass
-
     def local_split(self, basis, m, functions_to_remove, new_functions):
         b1, b2 = split_single_basis_function(m, basis)
         if self.contains_basis_function(b1):
