@@ -13,6 +13,7 @@ ElementVector = typing.List['Element']
 def intersects(b_spline: "BSpline", element: "Element") -> bool:
     """
     Returns true if the support of b_spline intersects the element with positive area.
+
     :param b_spline: b_spline whose support is to be checked
     :param element: element whose domain is to be checked
     :return: true or false
@@ -30,6 +31,7 @@ def intersects(b_spline: "BSpline", element: "Element") -> bool:
 def _evaluate_univariate_b_spline(x: float, knots: typing.Union[Vector, np.ndarray], degree: int) -> float:
     """
     Evaluates a univariate BSpline corresponding to the given knot vector and polynomial degree at the point x.
+
     :param x: point of evaluation
     :param knots: knot vector
     :param degree: polynomial degree
@@ -60,6 +62,7 @@ def _evaluate_univariate_b_spline(x: float, knots: typing.Union[Vector, np.ndarr
 def _augment_knots(knots: Vector, degree: int) -> np.ndarray:
     """
     Adds degree + 1 values to either end of the knot vector, in order to facilitate matrix based evaluation.
+
     :param knots: knot vector
     :param degree: polynomial degree
     :return: padded knot vector
@@ -70,6 +73,7 @@ def _augment_knots(knots: Vector, degree: int) -> np.ndarray:
 def _find_knot_interval(x: float, knots: np.ndarray) -> int:
     """
     Finds the index i such that knots[i] <= x < knots[i+1]
+
     :param x: point of interest
     :param knots: knot vector
     :return: index i
@@ -83,6 +87,7 @@ def cached_univariate(degree: int, knots: Vector) -> callable:
     """
     Creates a cached version of the _evaluate_univariate_b_spline functions, as in a tensor product structure
     this yields a significant speedup.
+
     :param degree: polynomial degree
     :param knots: knot vector
     :return: cached univariate evaluation.
@@ -104,6 +109,7 @@ class BSpline(object):
         """
         Initialize a BSpline with bidegree (degree_u, degree_v) over associated knot vectors
         knots_u and knots_v
+
         :param degree_u: degree in u_direction
         :param degree_v: degree in v_direction
         :param knots_u:  knot vector in u_direction
@@ -126,6 +132,7 @@ class BSpline(object):
     def __call__(self, u: float, v: float) -> float:
         """
         Evaluates the BSpline at the parametric point (u, v).
+
         :param u: u component
         :param v: v component
         :return: B(u, v)
@@ -137,6 +144,7 @@ class BSpline(object):
         """
         Returns true if the given element intersects the support of this BSpline, and
         adds element to the list of elements of support.
+
         :param element: element in consideration
         :return: true or false
         """
@@ -151,6 +159,7 @@ class BSpline(object):
         """
         Removes given element from the list of elements with support.
         Returns true if element is found and removed, false otherwise.
+
         :param element: element to remove
         :return: true or false
         """
@@ -165,6 +174,7 @@ class BSpline(object):
         """
         Implements == operator for BSplines. Two BSplines are assumed to be equal if their knot vectors are equal
         within a tolerance.
+
         :param other: BSpline to compare against
         :return: true or false
         """
@@ -175,6 +185,7 @@ class BSpline(object):
     def knot_average(self) -> typing.Tuple[float, float]:
         """
         Returns the knot average for this BSpline (the Greville point).
+
         :return: the knot average (u, v).
         """
 

@@ -82,6 +82,7 @@ class Meshline(object):
     def midpoint(self) -> typing.Tuple[float, float]:
         """
         Returns the midpoint of the meshline.
+
         :return: midpoint of the mesh line.
         """
 
@@ -95,7 +96,9 @@ class Meshline(object):
 
     def _similar(self, other: "Meshline") -> bool:
         """
-        Returns true if the two meshlines have the same direction and the same constant_value, but not neccesarily the same endpoints or multiplicity.
+        Returns true if the two meshlines have the same direction and the same constant_value, but not neccesarily
+        the same endpoints or multiplicity.
+
         :param other: meshline to compare against
         :return: true or false
         """
@@ -105,6 +108,7 @@ class Meshline(object):
     def __eq__(self, other: "Meshline") -> bool:
         """
         Returns true if the two meshlines have the same direction, same constant value, and same endpoints and multiplicity.
+
         :param other: meshline to compare against
         :return: true or false
         """
@@ -115,6 +119,7 @@ class Meshline(object):
     def contains(self, other: "Meshline") -> bool:
         """
         Returns true if meshline is completely contained in this meshline.
+
         :param other: meshline to check if is contained
         :return: true if other is contained, false otherwise
         """
@@ -127,6 +132,7 @@ class Meshline(object):
     def overlaps(self, other: "Meshline") -> bool:
         """
         Returns true if the two meshlines overlap.
+
         :param other: meshline to check for overlap
         :return: true if the meshlines overlap, false otherwise
         """

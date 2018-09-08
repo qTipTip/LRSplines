@@ -9,6 +9,7 @@ from LRSplines.meshline import Meshline
 def _split_weights(knots: np.ndarray, x: float) -> typing.Tuple[float, float]:
     """
     Returns the weights corresponding to knot insertion of x into `knots`
+
     :param knots: initial knot vector
     :param x: knot to be inserted
     :return: knot insertion weights alpha1 and alpha2
@@ -30,6 +31,7 @@ def _split(alpha_1: float, alpha_2: float, b: BSpline, m: Meshline, new_knots: n
     """
     Given two split weights, a b spline marked for splitting by the given meshline and a set of new knots,
     return the two resulting BSplines
+
     :param alpha_1: left split weight
     :param alpha_2: right split weight
     :param b: old BSpline
@@ -51,6 +53,7 @@ def split_single_basis_function(m: Meshline, b: BSpline, return_weights=False) -
     typing.Tuple[BSpline, BSpline, float, float], typing.Tuple[BSpline, BSpline]]:
     """
     Splits a single basis function according to the provided meshline and updates the set of basis functions.
+
     :param m: meshline to split basis func by
     :param b: basis function to split
     """

@@ -15,6 +15,7 @@ class Element(object):
         """
         Initialize an Element (a rectangle) with lower left corner (u_min, v_min)
         and upper right corner (u_max, v_max)
+
         :param u_min: lower left u_component
         :param v_min: lower left v_component
         :param u_max: upper right u_component
@@ -31,6 +32,7 @@ class Element(object):
     def fetch_neighbours(self):
         """
         Returns a list of neighbouring elements based on supported B-splines.
+
         :return:
         """
         pass
@@ -38,6 +40,7 @@ class Element(object):
     def contains(self, u: float, v: float) -> bool:
         """
         Returns True if this element contains the point (u, v)
+
         :param u: u_component
         :param v: v_component
         :return:
@@ -48,6 +51,7 @@ class Element(object):
     def get_supported_b_spline(self, i: int):
         """
         Returns the i-th supported B-spline.
+
         :param i: index of supported B-spline
         :return: b-spline i
         """
@@ -56,6 +60,7 @@ class Element(object):
     def add_supported_b_spline(self, b_spline):
         """
         Adds a B-spline to the list of supported B-splines.
+
         :param b_spline: B-spline to add
         """
         self.supported_b_splines.append(b_spline)
@@ -63,6 +68,7 @@ class Element(object):
     def remove_supported_b_spline(self, b_spline):
         """
         Removes a B-spline from the list of supported B-splines.
+
         :param b_spline: B-spline to remove
         """
         self.supported_b_splines.remove(b_spline)
@@ -70,6 +76,7 @@ class Element(object):
     def has_supported_b_spline(self, b_spline) -> bool:
         """
         Returns True if given b_spline is among the list of supported b-splines.
+
         :param b_spline: B-spline to check
         :return: True or False
         """
@@ -78,6 +85,7 @@ class Element(object):
     def update_supported_basis(self, b_splines: BasisFunctions) -> None:
         """
         Updates the list of supported basis functions.
+
         :param b_splines: list of BSpline functions
         """
 
@@ -86,6 +94,7 @@ class Element(object):
     def split(self, axis: int, split_value: float) -> "Element":
         """
         Splits the element into two, resizing into the left half, and returning the right half.
+
         :return: right half of element.
         """
 
@@ -108,6 +117,7 @@ class Element(object):
     def midpoint(self) -> typing.Tuple[float, float]:
         """
         Returns the midpoint of the element.
+
         :return: midpoint of the element
         """
         return (self.u_max - self.u_min) * 0.5 + self.u_min, (self.v_max - self.v_min) * 0.5 + self.v_min
@@ -116,6 +126,7 @@ class Element(object):
     def area(self) -> float:
         """
         Returns the area of the element.
+
         :return: area of the element
         """
         return (self.u_max - self.u_min) * (self.v_max - self.v_min)
@@ -123,6 +134,7 @@ class Element(object):
     def intersects(self, other: 'Element') -> bool:
         """
         Returns true if this element intersects the other element with *positive* area.
+
         :param other: the element to check intersection with.
         :return: true or false
         """
@@ -137,6 +149,7 @@ class Element(object):
     def __eq__(self, other: 'Element') -> bool:
         """
         Checks whether the two elements are equal within a tolerance.
+
         :param other: element to compare
         :return: true or false
         """
@@ -151,6 +164,7 @@ class Element(object):
     def is_overloaded(self) -> bool:
         """
         Returns true if the number of supported B-splines on this element is greater than (d1 + 1)*(d2 + 1).
+
         :return: true if overloaded, false otherwise
         """
 
@@ -158,6 +172,7 @@ class Element(object):
 
         return len(self.supported_b_splines) > (b.degree_u + 1) * (b.degree_v + 1)
 
-    # TODO: Now that I think about it, this hash may change during the lifetime of the object, due to the Element.split method.
+    # TODO: Now that I think about it, this hash may change during the lifetime of the object, due to the
+    # Element.split method.
     def __hash__(self):
         return hash(tuple([self.u_min, self.u_max, self.v_min, self.v_max]))
