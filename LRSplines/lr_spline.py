@@ -137,7 +137,7 @@ class LRSpline(object):
 
         # step 0
         # merge any existing meshlines, if the meshline already exists, we are done and can return early.
-        meshline_already_exists = self.merge_meshlines(meshline)
+        meshline_already_exists, meshline = self.merge_meshlines(meshline)
 
         if meshline_already_exists:
             return
@@ -293,7 +293,8 @@ class LRSpline(object):
                 continue
             if meshline == old_meshline:
                 # meshline already exists, no point in continuing
-                return True
+                return True, meshline
+
             if old_meshline.contains(meshline):
                 # meshline is completely contained in the old meshline
 
@@ -304,7 +305,7 @@ class LRSpline(object):
                         meshlines_to_remove.append(old_meshline)
 
                 elif old_meshline.multiplicity >= meshline.multiplicity:
-                    return True
+                    return True, old_meshline
 
             elif old_meshline.overlaps(meshline):
                 if old_meshline.multiplicity < meshline.multiplicity:
@@ -327,4 +328,4 @@ class LRSpline(object):
 
         for old_meshline in meshlines_to_remove:
             self.meshlines.remove(old_meshline)
-        return False
+        return False, meshline
