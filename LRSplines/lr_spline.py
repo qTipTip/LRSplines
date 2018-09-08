@@ -271,7 +271,7 @@ class LRSpline(object):
             raise ValueError('({}, {}) is not in the domain'.format(u, v))
         return e
 
-    def merge_meshlines(self, meshline: Meshline) -> bool:
+    def merge_meshlines(self, meshline: Meshline) -> typing.Tuple[bool, Meshline]:
         """
         Tests the meshline against all currently stored meshlines, and combines, updates and deletes
         meshlines as needed. Returns true if the meshline is already in the list of previous meshlines.
