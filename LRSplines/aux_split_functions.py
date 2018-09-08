@@ -2,8 +2,8 @@ import typing
 
 import numpy as np
 
-from src.b_spline import BSpline
-from src.meshline import Meshline
+from LRSplines.b_spline import BSpline
+from LRSplines.meshline import Meshline
 
 
 def _split_weights(knots: np.ndarray, x: float) -> typing.Tuple[float, float]:

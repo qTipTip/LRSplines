@@ -2,8 +2,8 @@ import typing
 
 import numpy as np
 
-from src.b_spline import BSpline
-from src.element import Element
+from LRSplines.b_spline import BSpline
+from LRSplines.element import Element
 
 
 class Meshline(object):

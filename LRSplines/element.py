@@ -4,7 +4,7 @@ of its lower left and upper right corner.
 """
 import typing
 
-from src.b_spline import BSpline
+from LRSplines.b_spline import BSpline
 
 BasisFunctions = typing.List[BSpline]
 

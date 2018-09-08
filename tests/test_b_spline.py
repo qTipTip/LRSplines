@@ -1,7 +1,7 @@
 import numpy as np
 
-from src.b_spline import BSpline, intersects, _evaluate_univariate_b_spline
-from src.element import Element
+from LRSplines.b_spline import BSpline, intersects, _evaluate_univariate_b_spline
+from LRSplines.element import Element
 
 
 def test_b_spline_init():

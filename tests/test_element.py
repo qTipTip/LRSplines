@@ -1,5 +1,5 @@
-from src.lr_spline import init_tensor_product_LR_spline
-from src.element import Element
+from LRSplines.lr_spline import init_tensor_product_LR_spline
+from LRSplines.element import Element
 
 
 def test_element_init():

@@ -1,7 +1,7 @@
-from src.b_spline import BSpline
-from src.element import Element
-from src.lr_spline import init_tensor_product_LR_spline, LRSpline
-from src.meshline import Meshline
+from LRSplines.b_spline import BSpline
+from LRSplines.element import Element
+from LRSplines.lr_spline import init_tensor_product_LR_spline, LRSpline
+from LRSplines.meshline import Meshline
 from collections import Counter
 
 import pytest

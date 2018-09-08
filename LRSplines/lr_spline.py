@@ -3,10 +3,10 @@ from typing import List
 
 import numpy as np
 
-from src.aux_split_functions import split_single_basis_function
-from src.meshline import Meshline
-from src.b_spline import BSpline
-from src.element import Element
+from LRSplines.aux_split_functions import split_single_basis_function
+from LRSplines.b_spline import BSpline
+from LRSplines.element import Element
+from LRSplines.meshline import Meshline
 
 Vector = typing.Union[typing.List['float'], np.ndarray]
 
@@ -14,6 +14,7 @@ Vector = typing.Union[typing.List['float'], np.ndarray]
 def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> 'LRSpline':
     """
     Initializes an LR spline at the tensor product level of bidegree (d1, d2).
+
     :param d1: first component degree
     :param d2: second component degree
     :param ku: knots in u_direction
@@ -61,6 +62,7 @@ class LRSpline(object):
     def __init__(self, mesh: List['Element'], basis: List['BSpline'], meshlines: List['Meshline']) -> None:
         """
         Initialize an LR Spline with associated set of elements, and set of basis functions.
+
         :param mesh: elements constituting the LR mesh
         :param basis: basis functions defined over the LR mesh
         """
@@ -72,6 +74,7 @@ class LRSpline(object):
         """
         Refines the LRSpline by finding and inserting a meshline that ensures that all supported BSplines on the
         given element will be split by the refinement.
+
         :param e: element to refine
         """
         raise NotImplementedError('LRSpline.{} is not implemented yet'.format(self.refine_by_element_full.__name__))
@@ -79,7 +82,9 @@ class LRSpline(object):
     def refine_by_element_minimal(self, e: Element) -> None:
         """
         Refines the LRSpline by finding and inserting the smallest possible meshline that splits the support of at
-        least one BSpline. :param e: element to refine
+        least one BSpline.
+
+        :param e: element to refine
         """
         raise NotImplementedError('LRSpline.{} is not implemented yet'.format(self.refine_by_element_minimal.__name__))
 
@@ -87,8 +92,11 @@ class LRSpline(object):
     def get_minimal_span_meshline(e: Element, axis) -> Meshline:
         """
         Finds the shortest possible meshline in direction prescribed by axis that splits at least one supported
-        B-spline on the element. :param e: element to refine by :param axis: direction to look for split, 0 vertical,
-        1 horizontal :return: minimal span meshline
+        B-spline on the element.
+
+        :param e: element to refine by
+        :param axis: direction to look for split, 0 vertical, 1 horizontal
+        :return: minimal span meshline
         """
 
         smallest_start = None
@@ -223,6 +231,7 @@ class LRSpline(object):
         """
         Updates the basis function corresponding to b1 with new weights and coefficients, dependent on
         the basis that was split, and the new basis function.
+
         :param original_basis: the orginal basis function that was split, yielding `new basis`
         :param new_basis: the `new basis` originating from splitting `original_basis`, which is already present in self.S
         :return:
@@ -236,6 +245,7 @@ class LRSpline(object):
     def contains_basis_function(self, B: BSpline) -> bool:
         """
         Returns true if B is found in self.S
+
         :param B: BSpline to find
         :return: true or false
         """
@@ -249,6 +259,7 @@ class LRSpline(object):
     def contains_element(self, element: 'Element') -> bool:
         """
         Returns true if element is found in self.M
+
         :param element: element to check
         :return: true or false
         """
@@ -261,6 +272,7 @@ class LRSpline(object):
     def __call__(self, u, v):
         """
         Evaluates the LRSpline at the point (u, v)
+
         :param u: first component
         :param v: secont component
         :return: L(u, v)
@@ -285,11 +297,12 @@ class LRSpline(object):
         """
         Tests the meshline against all currently stored meshlines, and combines, updates and deletes
         meshlines as needed. Returns true if the meshline is already in the list of previous meshlines.
-
         There are three cases:
+
             1. The new meshline overlaps with a previous mesh line, but is not contained by the previous one.
             2. The new meshline is completely contained in a previous mesh line, (may in fact be equal)
             3. The new meshline is completely disjoint from all other meshlines.
+
         :param meshline: meshline to test against previous meshlines.
         :return: true if meshline was previously found, false otherwise.
         """

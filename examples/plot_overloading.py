@@ -1,8 +1,8 @@
 import matplotlib.patches as plp
 import matplotlib.pyplot as plt
 
-from src.lr_spline import init_tensor_product_LR_spline
-from src.meshline import Meshline
+from LRSplines.lr_spline import init_tensor_product_LR_spline
+from LRSplines.meshline import Meshline
 
 
 def visualize_mesh(LR) -> None:

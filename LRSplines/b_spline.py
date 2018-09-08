@@ -4,7 +4,7 @@ from functools import lru_cache
 import numpy as np
 
 if False:
-    from src.element import Element
+    from LRSplines.element import Element
 
 Vector = typing.List['float']
 ElementVector = typing.List['Element']

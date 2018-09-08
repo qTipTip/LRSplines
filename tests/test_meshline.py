@@ -1,6 +1,6 @@
-from src.b_spline import BSpline
-from src.element import Element
-from src.meshline import Meshline
+from LRSplines.b_spline import BSpline
+from LRSplines.element import Element
+from LRSplines.meshline import Meshline
 
 
 def test_meshline_init():

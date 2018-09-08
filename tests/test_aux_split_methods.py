@@ -1,8 +1,8 @@
 import numpy as np
 
-from src.aux_split_functions import split_single_basis_function
-from src.b_spline import BSpline
-from src.meshline import Meshline
+from LRSplines.aux_split_functions import split_single_basis_function
+from LRSplines.b_spline import BSpline
+from LRSplines.meshline import Meshline
 
 
 def test_aux_split_methods():
