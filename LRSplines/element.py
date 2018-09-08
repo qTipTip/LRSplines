@@ -98,6 +98,7 @@ class Element(object):
         :return: right half of element.
         """
 
+        # Create new element and resize old.
         new_element = None
         if axis == 0:  # vertical split
             if not self.u_min < split_value < self.u_max:
@@ -111,6 +112,18 @@ class Element(object):
             new_element = Element(self.u_min, split_value, self.u_max, self.v_max)
             self.v_max = split_value
 
+        # Check all supported basis functions if their support has changed.
+        supported_basis_to_remove = []
+        for basis in self.supported_b_splines:
+            if basis.add_to_support_if_intersects(new_element):
+                new_element.add_supported_b_spline(basis)
+
+            if not basis.intersects(self):
+                supported_basis_to_remove.append(basis)
+                basis.remove_from_support(self)
+
+        for basis_to_remove in supported_basis_to_remove:
+            self.remove_supported_b_spline(basis_to_remove)
         return new_element
 
     @property
