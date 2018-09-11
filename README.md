@@ -120,7 +120,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 # set the coefficients explicitly
-for b in LR.B:
+for b in LR.S:
     b.coefficient = np.random.random(-3, 3)
 
 N = 20
