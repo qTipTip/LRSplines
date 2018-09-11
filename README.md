@@ -1,4 +1,6 @@
 # LR Splines
+[![Build Status](https://travis-ci.org/qTipTip/LRSplines.svg?branch=master)](https://travis-ci.org/qTipTip/LRSplines)
+[![Coverage Status](https://coveralls.io/repos/github/qTipTip/LRSplines/badge.svg?branch=master)](https://coveralls.io/github/qTipTip/LRSplines?branch=master)
 #### An LR-Spline implementation written in Python.
 
 This aim of Python library is to provide a lightweight framework for understanding
