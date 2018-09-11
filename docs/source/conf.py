@@ -41,11 +41,6 @@ extensions = ['sphinx.ext.autodoc',
 templates_path = ['_templates']
 
 
-import recommonmark.parser
-
-source_parsers = {
-    'md': 'recommonmark.parser.CommonMarkParser'
-}
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #

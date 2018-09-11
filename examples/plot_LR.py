@@ -42,7 +42,7 @@ def visualize_mesh(LR) -> None:
 
 
 if __name__ == '__main__':
-    for N in [10, 20, 30, 40]:
+    for N in [2, 4, 6, 8]:
         d1, d2 = 2, 2
         ku = [0, 0, 0, 0.5, 0.75, 1, 1, 1]
         LR = init_tensor_product_LR_spline(d1, d2, ku, ku)
@@ -58,7 +58,6 @@ if __name__ == '__main__':
             for j in range(N):
                 z[i, j] = LR(x[i], x[j])
         expected = np.ones((N, N))
-        #np.testing.assert_array_almost_equal(z, expected)
         X, Y = np.meshgrid(x, x)
 
         fig = plt.figure()

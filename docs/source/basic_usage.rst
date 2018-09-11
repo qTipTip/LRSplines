@@ -32,6 +32,7 @@ yielding the image
 .. raw:: html
 
    <p align="center">
+   <img src='_static/mesh_1.png'>
 
 .. raw:: html
 
@@ -74,6 +75,7 @@ This yields the following image:
 .. raw:: html
 
    <p align="center">
+   <img src='_static/mesh_2.png'>
 
 .. raw:: html
 
@@ -121,6 +123,7 @@ This gives the resulting surface:
 .. raw:: html
 
    <p align="center">
+   <img src='_static/surf_1.png'>
 
 .. raw:: html
 
