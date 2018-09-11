@@ -140,3 +140,11 @@ def test_endpoint_interpolation():
     assert B(0, 4) == 1
     assert B(1, 3) == 0
     assert B(1, 4) == 0
+
+
+def test_endpoint_interpolation_univariate():
+    ku = [0, 1, 1, 1]
+    d = 2
+    x = 1
+    assert _evaluate_univariate_b_spline(x, ku, d, endpoint=True) == 1
+    assert _evaluate_univariate_b_spline(x, ku, d) == 0

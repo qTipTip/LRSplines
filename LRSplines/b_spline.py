@@ -28,20 +28,22 @@ def intersects(b_spline: "BSpline", element: "Element") -> bool:
         return True
 
 
-def _evaluate_univariate_b_spline(x: float, knots: typing.Union[Vector, np.ndarray], degree: int) -> float:
+def _evaluate_univariate_b_spline(x: float, knots: typing.Union[Vector, np.ndarray], degree: int,
+                                  endpoint=False) -> float:
     """
     Evaluates a univariate BSpline corresponding to the given knot vector and polynomial degree at the point x.
 
+    :param endpoint:
     :param x: point of evaluation
     :param knots: knot vector
     :param degree: polynomial degree
     :return: B(x)
     """
-    t = _augment_knots(knots, degree)
-    i = _find_knot_interval(x, t)
-
-    if i <= degree:
+    i = _find_knot_interval(x, knots)
+    if i == -1:
         return 0
+    t = _augment_knots(knots, degree)
+    i += degree + 1
 
     c = np.zeros(len(t) - degree - 1)
     c[degree + 1] = 1
