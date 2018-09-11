@@ -90,3 +90,30 @@ def test_lr_spline_partition_at_end_uv_point():
         assert 3 in b.knots_v
         if b.end_u:
             assert 1 in b.knots_u
+
+
+def test_lr_spline_at_end_vs_knots_tensor_product():
+    d1, d2 = 2, 2
+    ku = [0, 0, 0, 0.5, 0.75, 1, 1, 1]
+    kv = [0, 0, 0, 1, 2, 3, 3, 3]
+    LR = init_tensor_product_LR_spline(d1, d2, ku, kv)
+
+    for b in LR.S:
+        if b.end_u:
+            assert ku[-1] in b.knots_u
+        if b.end_v:
+            assert kv[-1] in b.knots_v
+
+
+# TODO Implement this test for meshline insertion.
+def test_lr_spline_at_end_vs_knots_refined():
+    d1, d2 = 2, 2
+    ku = [0, 0, 0, 0.5, 0.75, 1, 1, 1]
+    kv = [0, 0, 0, 1, 2, 3, 3, 3]
+    LR = init_tensor_product_LR_spline(d1, d2, ku, kv)
+
+    for b in LR.S:
+        if b.end_u:
+            assert ku[-1] in b.knots_u
+        if b.end_v:
+            assert kv[-1] in b.knots_v
