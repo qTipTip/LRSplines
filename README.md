@@ -69,7 +69,9 @@ LR.visualize_mesh()
 ```
 yielding the image
 
-![](resources/mesh_1.png)
+<p align="center">
+  <img src=resources/mesh_1.png/>
+</p>
 
 Here, each **element** of the mesh displays the number of supported B-splines. In this case there are nine supported B-splines on
 each element. The green color indicates that the element is not **overloaded**. Each meshline displays its **multiplicity**
@@ -98,7 +100,9 @@ LR.visualize_mesh()
 ```
 
 This yields the following image:
-![](resources/mesh_2.png)
+<p align="center">
+  <img src=resources/mesh_2.png/>
+</p>
 As we can see, some of the elements have turned red, indicating that they are now overloaded, which may result in loss of linear independence.
 
     
@@ -135,5 +139,6 @@ axs.plot_wireframe(X, Y, z) # or plot_surface
 ```
 
 This gives the resulting surface:
-
-![](resources/surf_1.png)
+<p align="center">
+  <img src=resources/surf_1.png/>
+</p>
