@@ -11,6 +11,10 @@ from LRSplines.meshline import Meshline
 Vector = typing.Union[typing.List['float'], np.ndarray]
 
 
+def _at_end(knots, index):
+    return abs(knots[-1] - knots[index]) < 1.0E-14
+
+
 def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> 'LRSpline':
     """
     Initializes an LR spline at the tensor product level of bidegree (d1, d2).
@@ -21,9 +25,6 @@ def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> '
     :param kv: knots in v_direction
     :return: corresponding LR_spline
     """
-
-    def _at_end(knots, index):
-        return abs(knots[-1] - knots[index]) < 1.0E-14
 
     elements = []
     basis = []

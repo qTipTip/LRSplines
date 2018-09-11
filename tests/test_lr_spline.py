@@ -4,7 +4,7 @@ import pytest
 
 from LRSplines.b_spline import BSpline
 from LRSplines.element import Element
-from LRSplines.lr_spline import init_tensor_product_LR_spline, LRSpline
+from LRSplines.lr_spline import init_tensor_product_LR_spline, LRSpline, _at_end
 from LRSplines.meshline import Meshline
 
 
@@ -211,3 +211,13 @@ def test_lr_spline_overloading_count_bilinear():
 
     for e in LR.M:
         assert len(e.supported_b_splines) in [4, 5]
+
+
+def test_lr_spline_at_end():
+    k = [0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 7, 7]
+
+    assert not _at_end(k, 2)
+    assert not _at_end(k, 8)
+    assert _at_end(k, 9)
+    assert _at_end(k, 10)
+    assert _at_end(k, 11)
