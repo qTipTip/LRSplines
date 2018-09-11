@@ -129,8 +129,9 @@ for i in range(N):
 
 fig = plt.figure()
 axs = Axes3D(fig)
+ 
+axs.plot_wireframe(X, Y, z) # or plot_surface
 
-axs.plot_surface(X, Y, z)
 ```
 
 This gives the resulting surface:
