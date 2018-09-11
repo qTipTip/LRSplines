@@ -1,6 +1,6 @@
 import numpy as np
 
-from LRSplines.b_spline import BSpline, intersects, _evaluate_univariate_b_spline, _find_knot_interval
+from LRSplines.b_spline import BSpline, _evaluate_univariate_b_spline, _find_knot_interval
 from LRSplines.element import Element
 
 
@@ -34,9 +34,9 @@ def test_b_spline_intersects():
     e2 = Element(10, 10, 20, 20)
     e3 = Element(1, 4, 2, 5)
 
-    assert intersects(B, e1)
-    assert not intersects(B, e2)
-    assert intersects(B, e3)
+    assert B.intersects(e1)
+    assert not B.intersects(e2)
+    assert B.intersects(e3)
 
 
 def test_b_spline_add_to_support_if_intersects():
