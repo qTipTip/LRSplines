@@ -134,7 +134,7 @@ def test_endpoint_interpolation():
 
     d1 = 2
     d2 = 2
-    B = BSpline(d1, d2, ku, kv)
+    B = BSpline(d1, d2, ku, kv, end_u=True, end_v=True)
 
     assert B(0, 3) == 0
     assert B(0, 4) == 1

@@ -96,11 +96,13 @@ def _find_knot_interval(x: float, knots: np.ndarray, endpoint=False) -> int:
     return np.max(np.argmax(knots > x) - 1, 0)
 
 
-def cached_univariate(degree: int, knots: Vector) -> callable:
+def cached_univariate(degree: int, knots: typing.Union[typing.List[float], np.ndarray],
+                      endpoint: bool = False) -> typing.Callable:
     """
     Creates a cached version of the _evaluate_univariate_b_spline functions, as in a tensor product structure
     this yields a significant speedup.
 
+    :param endpoint:
     :param degree: polynomial degree
     :param knots: knot vector
     :return: cached univariate evaluation.
@@ -108,7 +110,7 @@ def cached_univariate(degree: int, knots: Vector) -> callable:
 
     @lru_cache(maxsize=128)
     def cached_evaluation(x):
-        return _evaluate_univariate_b_spline(x, knots, degree)
+        return _evaluate_univariate_b_spline(x, knots, degree, endpoint=endpoint)
 
     return cached_evaluation
 
@@ -117,12 +119,16 @@ class BSpline(object):
     """
     Represents a single weighted tensor product B-spline with associated methods and fields.
     """
+    coefficient: float
 
-    def __init__(self, degree_u: int, degree_v: int, knots_u: Vector, knots_v: Vector, weight: float = 1) -> None:
+    def __init__(self, degree_u: int, degree_v: int, knots_u: Vector, knots_v: Vector, weight: float = 1, end_u=False,
+                 end_v=False) -> None:
         """
         Initialize a BSpline with bidegree (degree_u, degree_v) over associated knot vectors
         knots_u and knots_v
 
+        :param end_u:
+        :param end_v:
         :param degree_u: degree in u_direction
         :param degree_v: degree in v_direction
         :param knots_u:  knot vector in u_direction
@@ -140,7 +146,7 @@ class BSpline(object):
 
         # for cached calls
         self._univariate_u = cached_univariate(degree_u, knots_u)
-        self._univariate_v = cached_univariate(degree_v, knots_v)
+        self._univariate_v = cached_univariate(degree_v, knots_v, endpoint=end_v)
 
     def __call__(self, u: float, v: float) -> float:
         """
@@ -183,7 +189,7 @@ class BSpline(object):
         else:
             return False
 
-    def __eq__(self, other: "BSpline") -> bool:
+    def __eq__(self, other: object) -> typing.Union[bool, NotImplemented]:
         """
         Implements == operator for BSplines. Two BSplines are assumed to be equal if their knot vectors are equal
         within a tolerance.
@@ -191,6 +197,8 @@ class BSpline(object):
         :param other: BSpline to compare against
         :return: true or false
         """
+        if not isinstance(other, BSpline):
+            return NotImplemented
         return np.allclose(self.knots_u, other.knots_u, atol=1.0e-14) and np.allclose(self.knots_v, other.knots_v,
                                                                                       atol=1.0e-14)
 

@@ -1,10 +1,11 @@
+from collections import Counter
+
+import pytest
+
 from LRSplines.b_spline import BSpline
 from LRSplines.element import Element
 from LRSplines.lr_spline import init_tensor_product_LR_spline, LRSpline
 from LRSplines.meshline import Meshline
-from collections import Counter
-
-import pytest
 
 
 def test_lr_spline_minimal_span_line():
