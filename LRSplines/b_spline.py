@@ -146,7 +146,7 @@ class BSpline(object):
         self.elements_of_support: ElementVector = []
 
         # for cached calls
-        self._univariate_u = cached_univariate(degree_u, knots_u)
+        self._univariate_u = cached_univariate(degree_u, knots_u, endpoint=end_u)
         self._univariate_v = cached_univariate(degree_v, knots_v, endpoint=end_v)
 
     def __call__(self, u: float, v: float) -> float:
