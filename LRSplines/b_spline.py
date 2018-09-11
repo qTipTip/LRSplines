@@ -189,7 +189,7 @@ class BSpline(object):
         else:
             return False
 
-    def __eq__(self, other: object) -> typing.Union[bool, NotImplemented]:
+    def __eq__(self, other: object) -> bool:
         """
         Implements == operator for BSplines. Two BSplines are assumed to be equal if their knot vectors are equal
         within a tolerance.
@@ -198,7 +198,7 @@ class BSpline(object):
         :return: true or false
         """
         if not isinstance(other, BSpline):
-            return NotImplemented
+            return False
         return np.allclose(self.knots_u, other.knots_u, atol=1.0e-14) and np.allclose(self.knots_v, other.knots_v,
                                                                                       atol=1.0e-14)
 
