@@ -1,6 +1,8 @@
 import typing
 from typing import List
 
+import matplotlib.patches as plp
+import matplotlib.pyplot as plt
 import numpy as np
 
 from LRSplines.aux_split_functions import split_single_basis_function
@@ -336,3 +338,30 @@ class LRSpline(object):
         for old_meshline in meshlines_to_remove:
             self.meshlines.remove(old_meshline)
         return False, meshline
+
+    def visualize_mesh(self) -> None:
+        """
+        Plots the LR-mesh.
+        """
+        fig = plt.figure()
+        axs = fig.add_subplot(1, 1, 1)
+        for m in self.meshlines:
+            x = (m.start, m.stop)
+            y = (m.constant_value, m.constant_value)
+            if m.axis == 0:
+                axs.plot(y, x, color='black')
+            else:
+                axs.plot(x, y, color='black')
+            axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(m.multiplicity), bbox=dict(facecolor='white', alpha=1))
+        for m in self.M:
+            w = m.u_max - m.u_min
+            h = m.v_max - m.v_min
+
+            if m.is_overloaded():
+                axs.add_patch(plp.Rectangle((m.u_min, m.v_min), w, h, fill=True, color='red', alpha=0.2))
+            else:
+                axs.add_patch(plp.Rectangle((m.u_min, m.v_min), w, h, fill=True, color='green', alpha=0.2))
+
+            axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(len(m.supported_b_splines)))
+        plt.title('dim(S) = {}'.format(len(self.S)))
+        plt.show()
