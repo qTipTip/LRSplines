@@ -1,0 +1,296 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Element &#8212; LR-Splines 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="BSpline" href="bspline.html" />
+    <link rel="prev" title="Meshline" href="meshline.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-LRSplines">
+<span id="element"></span><h1>Element<a class="headerlink" href="#module-LRSplines" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="LRSplines.Element">
+<em class="property">class </em><code class="descclassname">LRSplines.</code><code class="descname">Element</code><span class="sig-paren">(</span><em>u_min: float</em>, <em>v_min: float</em>, <em>u_max: float</em>, <em>v_max: float</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/LRSplines/element.html#Element"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#LRSplines.Element" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="LRSplines.Element.add_supported_b_spline">
+<code class="descname">add_supported_b_spline</code><span class="sig-paren">(</span><em>b_spline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/LRSplines/element.html#Element.add_supported_b_spline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#LRSplines.Element.add_supported_b_spline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a B-spline to the list of supported B-splines.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>b_spline</strong> – B-spline to add</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="LRSplines.Element.area">
+<code class="descname">area</code><a class="headerlink" href="#LRSplines.Element.area" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the area of the element.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">area of the element</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="LRSplines.Element.contains">
+<code class="descname">contains</code><span class="sig-paren">(</span><em>u: float</em>, <em>v: float</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/LRSplines/element.html#Element.contains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#LRSplines.Element.contains" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if this element contains the point (u, v)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>u</strong> – u_component</li>
+<li><strong>v</strong> – v_component</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="LRSplines.Element.fetch_neighbours">
+<code class="descname">fetch_neighbours</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/LRSplines/element.html#Element.fetch_neighbours"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#LRSplines.Element.fetch_neighbours" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of neighbouring elements based on supported B-splines.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="LRSplines.Element.get_supported_b_spline">
+<code class="descname">get_supported_b_spline</code><span class="sig-paren">(</span><em>i: int</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/LRSplines/element.html#Element.get_supported_b_spline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#LRSplines.Element.get_supported_b_spline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the i-th supported B-spline.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>i</strong> – index of supported B-spline</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">b-spline i</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="LRSplines.Element.has_supported_b_spline">
+<code class="descname">has_supported_b_spline</code><span class="sig-paren">(</span><em>b_spline</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/LRSplines/element.html#Element.has_supported_b_spline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#LRSplines.Element.has_supported_b_spline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if given b_spline is among the list of supported b-splines.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>b_spline</strong> – B-spline to check</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True or False</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="LRSplines.Element.intersects">
+<code class="descname">intersects</code><span class="sig-paren">(</span><em>other: LRSplines.element.Element</em><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/LRSplines/element.html#Element.intersects"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#LRSplines.Element.intersects" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if this element intersects the other element with <em>positive</em> area.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>other</strong> – the element to check intersection with.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">true or false</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="LRSplines.Element.is_overloaded">
+<code class="descname">is_overloaded</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; bool<a class="reference internal" href="_modules/LRSplines/element.html#Element.is_overloaded"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#LRSplines.Element.is_overloaded" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if the number of supported B-splines on this element is greater than (d1 + 1)*(d2 + 1).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">true if overloaded, false otherwise</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="LRSplines.Element.midpoint">
+<code class="descname">midpoint</code><a class="headerlink" href="#LRSplines.Element.midpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the midpoint of the element.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">midpoint of the element</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="LRSplines.Element.remove_supported_b_spline">
+<code class="descname">remove_supported_b_spline</code><span class="sig-paren">(</span><em>b_spline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/LRSplines/element.html#Element.remove_supported_b_spline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#LRSplines.Element.remove_supported_b_spline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes a B-spline from the list of supported B-splines.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>b_spline</strong> – B-spline to remove</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="LRSplines.Element.split">
+<code class="descname">split</code><span class="sig-paren">(</span><em>axis: int</em>, <em>split_value: float</em><span class="sig-paren">)</span> &#x2192; LRSplines.element.Element<a class="reference internal" href="_modules/LRSplines/element.html#Element.split"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#LRSplines.Element.split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Splits the element into two, resizing into the left half, and returning the right half.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">right half of element.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="LRSplines.Element.update_supported_basis">
+<code class="descname">update_supported_basis</code><span class="sig-paren">(</span><em>b_splines: List[LRSplines.b_spline.BSpline]</em><span class="sig-paren">)</span> &#x2192; None<a class="reference internal" href="_modules/LRSplines/element.html#Element.update_supported_basis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#LRSplines.Element.update_supported_basis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Updates the list of supported basis functions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>b_splines</strong> – list of BSpline functions</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">LR-Splines</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">LR Splines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basic_usage.html">Basic Usage</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="api_reference.html">LRSplines API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="lrspline.html">LRSpline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="meshline.html">Meshline</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Element</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bspline.html">BSpline</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="api_reference.html">LRSplines API Reference</a><ul>
+      <li>Previous: <a href="meshline.html" title="previous chapter">Meshline</a></li>
+      <li>Next: <a href="bspline.html" title="next chapter">BSpline</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Ivar Stangeby.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/element.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
