@@ -105,12 +105,16 @@ def test_lr_spline_at_end_vs_knots_tensor_product():
             assert kv[-1] in b.knots_v
 
 
-# TODO Implement this test for meshline insertion.
 def test_lr_spline_at_end_vs_knots_refined():
     d1, d2 = 2, 2
     ku = [0, 0, 0, 0.5, 0.75, 1, 1, 1]
     kv = [0, 0, 0, 1, 2, 3, 3, 3]
     LR = init_tensor_product_LR_spline(d1, d2, ku, kv)
+
+    np.random.seed(42)
+    for k in range(12):
+        m = LR.get_minimal_span_meshline(np.random.choice(LR.M), axis=k % 2)
+        LR.insert_line(m)
 
     for b in LR.S:
         if b.end_u:
