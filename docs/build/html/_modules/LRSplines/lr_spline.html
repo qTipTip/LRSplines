@@ -1,0 +1,575 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>LRSplines.lr_spline &mdash; LR-Splines 0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> LR-Splines
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">LR Splines</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../basic_usage.html">Basic Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api_reference.html">LRSplines API Reference</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">LR-Splines</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>LRSplines.lr_spline</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for LRSplines.lr_spline</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">typing</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">List</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.patches</span> <span class="k">as</span> <span class="nn">plp</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">LRSplines.aux_split_functions</span> <span class="k">import</span> <span class="n">split_single_basis_function</span>
+<span class="kn">from</span> <span class="nn">LRSplines.b_spline</span> <span class="k">import</span> <span class="n">BSpline</span>
+<span class="kn">from</span> <span class="nn">LRSplines.element</span> <span class="k">import</span> <span class="n">Element</span>
+<span class="kn">from</span> <span class="nn">LRSplines.meshline</span> <span class="k">import</span> <span class="n">Meshline</span>
+
+<span class="n">Vector</span> <span class="o">=</span> <span class="n">typing</span><span class="o">.</span><span class="n">Union</span><span class="p">[</span><span class="n">typing</span><span class="o">.</span><span class="n">List</span><span class="p">[</span><span class="s1">&#39;float&#39;</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_at_end</span><span class="p">(</span><span class="n">knots</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">abs</span><span class="p">(</span><span class="n">knots</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">knots</span><span class="p">[</span><span class="n">index</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">1.0E-14</span>
+
+
+<span class="k">def</span> <span class="nf">init_tensor_product_LR_spline</span><span class="p">(</span><span class="n">d1</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">d2</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">ku</span><span class="p">:</span> <span class="n">Vector</span><span class="p">,</span> <span class="n">kv</span><span class="p">:</span> <span class="n">Vector</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;LRSpline&#39;</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initializes an LR spline at the tensor product level of bidegree (d1, d2).</span>
+
+<span class="sd">    :param d1: first component degree</span>
+<span class="sd">    :param d2: second component degree</span>
+<span class="sd">    :param ku: knots in u_direction</span>
+<span class="sd">    :param kv: knots in v_direction</span>
+<span class="sd">    :return: corresponding LR_spline</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">elements</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">basis</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">meshlines</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">unique_ku</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">ku</span><span class="p">)</span>
+    <span class="n">unique_kv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">kv</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">unique_ku</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">unique_kv</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Element</span><span class="p">(</span><span class="n">unique_ku</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">unique_kv</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">unique_ku</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">unique_kv</span><span class="p">[</span><span class="n">j</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]))</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ku</span><span class="p">)</span> <span class="o">-</span> <span class="n">d1</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">kv</span><span class="p">)</span> <span class="o">-</span> <span class="n">d2</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">end_u</span> <span class="o">=</span> <span class="n">_at_end</span><span class="p">(</span><span class="n">ku</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="n">d1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">end_v</span> <span class="o">=</span> <span class="n">_at_end</span><span class="p">(</span><span class="n">kv</span><span class="p">,</span> <span class="n">j</span> <span class="o">+</span> <span class="n">d2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">basis</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BSpline</span><span class="p">(</span><span class="n">d1</span><span class="p">,</span> <span class="n">d2</span><span class="p">,</span> <span class="n">ku</span><span class="p">[</span><span class="n">i</span><span class="p">:</span> <span class="n">i</span> <span class="o">+</span> <span class="n">d1</span> <span class="o">+</span> <span class="mi">2</span><span class="p">],</span> <span class="n">kv</span><span class="p">[</span><span class="n">j</span><span class="p">:</span> <span class="n">j</span> <span class="o">+</span> <span class="n">d2</span> <span class="o">+</span> <span class="mi">2</span><span class="p">],</span> <span class="n">end_u</span><span class="o">=</span><span class="n">end_u</span><span class="p">,</span> <span class="n">end_v</span><span class="o">=</span><span class="n">end_v</span><span class="p">))</span>
+
+    <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">basis</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">elements</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">add_to_support_if_intersects</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+                <span class="n">e</span><span class="o">.</span><span class="n">add_supported_b_spline</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">unique_ku</span><span class="p">)):</span>
+        <span class="n">new_m</span> <span class="o">=</span> <span class="n">Meshline</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">unique_kv</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">stop</span><span class="o">=</span><span class="n">unique_kv</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">constant_value</span><span class="o">=</span><span class="n">unique_ku</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">new_m</span><span class="o">.</span><span class="n">set_multiplicity</span><span class="p">(</span><span class="n">ku</span><span class="p">)</span>
+        <span class="n">meshlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_m</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">unique_kv</span><span class="p">)):</span>
+        <span class="n">new_m</span> <span class="o">=</span> <span class="n">Meshline</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">unique_ku</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">stop</span><span class="o">=</span><span class="n">unique_ku</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">constant_value</span><span class="o">=</span><span class="n">unique_kv</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">new_m</span><span class="o">.</span><span class="n">set_multiplicity</span><span class="p">(</span><span class="n">kv</span><span class="p">)</span>
+        <span class="n">meshlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_m</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">LRSpline</span><span class="p">(</span><span class="n">elements</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">meshlines</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="LRSpline"><a class="viewcode-back" href="../../lrspline.html#LRSplines.LRSpline">[docs]</a><span class="k">class</span> <span class="nc">LRSpline</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a LRSpline, which is a tuple (M, S), where M is a mesh and S is a set of basis functions</span>
+<span class="sd">    defined on M.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mesh</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;Element&#39;</span><span class="p">],</span> <span class="n">basis</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;BSpline&#39;</span><span class="p">],</span> <span class="n">meshlines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s1">&#39;Meshline&#39;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize an LR Spline with associated set of elements, and set of basis functions.</span>
+
+<span class="sd">        :param mesh: elements constituting the LR mesh</span>
+<span class="sd">        :param basis: basis functions defined over the LR mesh</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">M</span> <span class="o">=</span> <span class="n">mesh</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">S</span> <span class="o">=</span> <span class="n">basis</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meshlines</span> <span class="o">=</span> <span class="n">meshlines</span>
+
+<div class="viewcode-block" id="LRSpline.refine_by_element_full"><a class="viewcode-back" href="../../lrspline.html#LRSplines.LRSpline.refine_by_element_full">[docs]</a>    <span class="k">def</span> <span class="nf">refine_by_element_full</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Refines the LRSpline by finding and inserting a meshline that ensures that all supported BSplines on the</span>
+<span class="sd">        given element will be split by the refinement.</span>
+
+<span class="sd">        :param e: element to refine</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;LRSpline.</span><span class="si">{}</span><span class="s1"> is not implemented yet&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">refine_by_element_full</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="LRSpline.refine_by_element_minimal"><a class="viewcode-back" href="../../lrspline.html#LRSplines.LRSpline.refine_by_element_minimal">[docs]</a>    <span class="k">def</span> <span class="nf">refine_by_element_minimal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span> <span class="n">Element</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Refines the LRSpline by finding and inserting the smallest possible meshline that splits the support of at</span>
+<span class="sd">        least one BSpline.</span>
+
+<span class="sd">        :param e: element to refine</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s1">&#39;LRSpline.</span><span class="si">{}</span><span class="s1"> is not implemented yet&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">refine_by_element_minimal</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="LRSpline.get_minimal_span_meshline"><a class="viewcode-back" href="../../lrspline.html#LRSplines.LRSpline.get_minimal_span_meshline">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_minimal_span_meshline</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="n">Element</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Meshline</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finds the shortest possible meshline in direction prescribed by axis that splits at least one supported</span>
+<span class="sd">        B-spline on the element.</span>
+
+<span class="sd">        :param e: element to refine by</span>
+<span class="sd">        :param axis: direction to look for split, 0 vertical, 1 horizontal</span>
+<span class="sd">        :return: minimal span meshline</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">smallest_start</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">smallest_stop</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">for</span> <span class="n">basis</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">supported_b_splines</span><span class="p">:</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="n">basis</span><span class="o">.</span><span class="n">knots_v</span> <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">basis</span><span class="o">.</span><span class="n">knots_u</span>
+            <span class="n">current_length</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">k</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">smallest_start</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">smallest_stop</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">current_length</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">smallest_stop</span> <span class="o">-</span> <span class="n">smallest_start</span><span class="p">):</span>
+                <span class="n">smallest_start</span> <span class="o">=</span> <span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">smallest_stop</span> <span class="o">=</span> <span class="n">k</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">constant_value</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">midpoint</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+
+        <span class="n">new_meshline</span> <span class="o">=</span> <span class="n">Meshline</span><span class="p">(</span><span class="n">smallest_start</span><span class="p">,</span> <span class="n">smallest_stop</span><span class="p">,</span> <span class="n">constant_value</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">new_meshline</span></div>
+
+<div class="viewcode-block" id="LRSpline.insert_line"><a class="viewcode-back" href="../../lrspline.html#LRSplines.LRSpline.insert_line">[docs]</a>    <span class="k">def</span> <span class="nf">insert_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meshline</span><span class="p">:</span> <span class="n">Meshline</span><span class="p">,</span> <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inserts a line in the mesh, splitting where necessary.</span>
+<span class="sd">        Follows a four step procedure:</span>
+
+<span class="sd">            Step 1: Test all BSplines against the new meshline, and if the meshline traverses the support, split the</span>
+<span class="sd">            BSpline into B1 and B2. For both B1 and B2, check whether they are already in the set of previous</span>
+<span class="sd">            BSplines. If they are not, add them to the list of new functions. Add the function that was split to the</span>
+<span class="sd">            list of functions to remove.</span>
+
+<span class="sd">            Step 2: Test all the new B-splines against all the meshlines already present in the mesh. They might have</span>
+<span class="sd">            to be split further.</span>
+
+<span class="sd">            Step 3: Check all elements of the mesh, and make sure that any previous elements traversed by the new</span>
+<span class="sd">            meshline are split accordingly.</span>
+
+<span class="sd">            Step 4: Make sure that all elements keep track of the basis functions they support, and that all basis</span>
+<span class="sd">            functions keep track of the elements that support them.</span>
+
+<span class="sd">        :param meshline: meshline to insert</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># step 0</span>
+        <span class="c1"># merge any existing meshlines, if the meshline already exists, we are done and can return early.</span>
+        <span class="n">meshline_already_exists</span><span class="p">,</span> <span class="n">meshline</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merge_meshlines</span><span class="p">(</span><span class="n">meshline</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">meshline_already_exists</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># step 1</span>
+        <span class="c1"># split B-splines against new meshline</span>
+        <span class="n">new_functions</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">functions_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">basis</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">meshline</span><span class="o">.</span><span class="n">splits_basis</span><span class="p">(</span><span class="n">basis</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">meshline</span><span class="o">.</span><span class="n">number_of_knots_contained</span><span class="p">(</span><span class="n">basis</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">meshline</span><span class="o">.</span><span class="n">multiplicity</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">local_split</span><span class="p">(</span><span class="n">basis</span><span class="p">,</span> <span class="n">meshline</span><span class="p">,</span> <span class="n">functions_to_remove</span><span class="p">,</span> <span class="n">new_functions</span><span class="p">)</span>
+
+        <span class="n">purged_S</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">functions_to_remove</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">S</span> <span class="o">=</span> <span class="n">purged_S</span>
+        <span class="c1"># step 2</span>
+        <span class="c1"># split new B-splines against old meshlines</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">meshlines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">meshline</span><span class="p">)</span>
+
+        <span class="c1"># for basis in new_functions:</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_functions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">basis</span> <span class="o">=</span> <span class="n">new_functions</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">split_more</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">meshlines</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">splits_basis</span><span class="p">(</span><span class="n">basis</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">number_of_knots_contained</span><span class="p">(</span><span class="n">basis</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">m</span><span class="o">.</span><span class="n">multiplicity</span><span class="p">:</span>
+                        <span class="n">split_more</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">local_split</span><span class="p">(</span><span class="n">basis</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">functions_to_remove</span><span class="p">,</span> <span class="n">new_functions</span><span class="p">)</span>
+                        <span class="k">break</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">split_more</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">basis</span><span class="p">)</span>
+
+        <span class="c1"># step 3</span>
+        <span class="c1"># split all marked elements against new meshline</span>
+        <span class="n">new_elements</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">meshline</span><span class="o">.</span><span class="n">splits_element</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+                <span class="n">new_elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">element</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">meshline</span><span class="o">.</span><span class="n">axis</span><span class="p">,</span> <span class="n">split_value</span><span class="o">=</span><span class="n">meshline</span><span class="o">.</span><span class="n">constant_value</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">M</span> <span class="o">+=</span> <span class="n">new_elements</span>
+
+        <span class="c1"># step 4</span>
+        <span class="c1"># clean up, make sure all basis functions points to correct elements</span>
+        <span class="c1"># make sure all elements point to correct basis functions</span>
+        <span class="c1"># TODO: This implementation is preliminary, and possibly very slow.</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">:</span>
+            <span class="n">element</span><span class="o">.</span><span class="n">supported_b_splines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">basis</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">:</span>
+            <span class="n">basis</span><span class="o">.</span><span class="n">elements_of_support</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">basis</span><span class="o">.</span><span class="n">add_to_support_if_intersects</span><span class="p">(</span><span class="n">element</span><span class="p">):</span>
+                    <span class="n">element</span><span class="o">.</span><span class="n">add_supported_b_spline</span><span class="p">(</span><span class="n">basis</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">local_split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">basis</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">functions_to_remove</span><span class="p">,</span> <span class="n">new_functions</span><span class="p">):</span>
+        <span class="n">b1</span><span class="p">,</span> <span class="n">b2</span> <span class="o">=</span> <span class="n">split_single_basis_function</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">basis</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">contains_basis_function</span><span class="p">(</span><span class="n">b1</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_old_basis_function</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">b1</span> <span class="ow">in</span> <span class="n">new_functions</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_old_basis_function</span><span class="p">(</span><span class="n">b1</span><span class="p">,</span> <span class="n">new_functions</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_functions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">contains_basis_function</span><span class="p">(</span><span class="n">b2</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_old_basis_function</span><span class="p">(</span><span class="n">b2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">b2</span> <span class="ow">in</span> <span class="n">new_functions</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_old_basis_function</span><span class="p">(</span><span class="n">b2</span><span class="p">,</span> <span class="n">new_functions</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">new_functions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">b2</span><span class="p">)</span>
+        <span class="n">functions_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">basis</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_update_old_basis_function</span><span class="p">(</span><span class="n">new_basis</span><span class="p">,</span> <span class="n">basis_list</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the basis function corresponding to b1 with new weights and coefficients, dependent on</span>
+<span class="sd">        the basis that was split, and the new basis function.</span>
+
+<span class="sd">        :param new_basis: the `new basis` originating from splitting `original_basis`, which is already present in self.S</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">basis_list</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">new_basis</span><span class="p">)</span>
+        <span class="n">basis_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">update_weights</span><span class="p">(</span><span class="n">new_basis</span><span class="p">)</span>
+
+<div class="viewcode-block" id="LRSpline.contains_basis_function"><a class="viewcode-back" href="../../lrspline.html#LRSplines.LRSpline.contains_basis_function">[docs]</a>    <span class="k">def</span> <span class="nf">contains_basis_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">B</span><span class="p">:</span> <span class="n">BSpline</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns true if B is found in self.S</span>
+
+<span class="sd">        :param B: BSpline to find</span>
+<span class="sd">        :return: true or false</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">b</span> <span class="o">==</span> <span class="n">B</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="LRSpline.contains_element"><a class="viewcode-back" href="../../lrspline.html#LRSplines.LRSpline.contains_element">[docs]</a>    <span class="k">def</span> <span class="nf">contains_element</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">:</span> <span class="s1">&#39;Element&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns true if element is found in self.M</span>
+
+<span class="sd">        :param element: element to check</span>
+<span class="sd">        :return: true or false</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="n">element</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Evaluates the LRSpline at the point (u, v)</span>
+
+<span class="sd">        :param u: first component</span>
+<span class="sd">        :param v: secont component</span>
+<span class="sd">        :return: L(u, v)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">e</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_element_containing_point</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+        <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">e</span><span class="o">.</span><span class="n">supported_b_splines</span><span class="p">:</span>
+            <span class="n">total</span> <span class="o">+=</span> <span class="n">b</span><span class="o">.</span><span class="n">coefficient</span> <span class="o">*</span> <span class="n">b</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">total</span>
+
+    <span class="k">def</span> <span class="nf">_find_element_containing_point</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;(</span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">) is not in the domain&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">e</span>
+
+<div class="viewcode-block" id="LRSpline.merge_meshlines"><a class="viewcode-back" href="../../lrspline.html#LRSplines.LRSpline.merge_meshlines">[docs]</a>    <span class="k">def</span> <span class="nf">merge_meshlines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meshline</span><span class="p">:</span> <span class="n">Meshline</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typing</span><span class="o">.</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Meshline</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Tests the meshline against all currently stored meshlines, and combines, updates and deletes</span>
+<span class="sd">        meshlines as needed. Returns true if the meshline is already in the list of previous meshlines.</span>
+<span class="sd">        There are three cases:</span>
+
+<span class="sd">            1. The new meshline overlaps with a previous mesh line, but is not contained by the previous one.</span>
+<span class="sd">            2. The new meshline is completely contained in a previous mesh line, (may in fact be equal)</span>
+<span class="sd">            3. The new meshline is completely disjoint from all other meshlines.</span>
+
+<span class="sd">        :param meshline: meshline to test against previous meshlines.</span>
+<span class="sd">        :return: true if meshline was previously found, false otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">tol</span> <span class="o">=</span> <span class="mf">1.0e-14</span>
+        <span class="n">meshlines_to_remove</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">old_meshline</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">meshlines</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">old_meshline</span><span class="o">.</span><span class="n">_similar</span><span class="p">(</span><span class="n">meshline</span><span class="p">):</span>
+                <span class="c1"># the two meshlines are not comparable, continue.</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">meshline</span> <span class="o">==</span> <span class="n">old_meshline</span><span class="p">:</span>
+                <span class="c1"># meshline already exists, no point in continuing</span>
+                <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">meshline</span>
+
+            <span class="k">if</span> <span class="n">old_meshline</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">meshline</span><span class="p">):</span>
+                <span class="c1"># meshline is completely contained in the old meshline</span>
+
+                <span class="k">if</span> <span class="n">meshline</span><span class="o">.</span><span class="n">multiplicity</span> <span class="o">&gt;</span> <span class="n">old_meshline</span><span class="o">.</span><span class="n">multiplicity</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">old_meshline</span><span class="o">.</span><span class="n">start</span> <span class="o">-</span> <span class="n">meshline</span><span class="o">.</span><span class="n">start</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">tol</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">old_meshline</span><span class="o">.</span><span class="n">stop</span> <span class="o">-</span> <span class="n">meshline</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">:</span>
+                        <span class="c1"># if the new multiplicity is greater than the old one, and the endpoints coincide, keep the</span>
+                        <span class="c1"># new line and remove the old line.</span>
+                        <span class="n">meshlines_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">old_meshline</span><span class="p">)</span>
+
+                <span class="k">elif</span> <span class="n">old_meshline</span><span class="o">.</span><span class="n">multiplicity</span> <span class="o">&gt;=</span> <span class="n">meshline</span><span class="o">.</span><span class="n">multiplicity</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">old_meshline</span>
+
+            <span class="k">elif</span> <span class="n">old_meshline</span><span class="o">.</span><span class="n">overlaps</span><span class="p">(</span><span class="n">meshline</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">old_meshline</span><span class="o">.</span><span class="n">multiplicity</span> <span class="o">&lt;</span> <span class="n">meshline</span><span class="o">.</span><span class="n">multiplicity</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">old_meshline</span><span class="o">.</span><span class="n">start</span> <span class="o">&gt;</span> <span class="n">meshline</span><span class="o">.</span><span class="n">start</span><span class="p">:</span>
+                        <span class="n">old_meshline</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">meshline</span><span class="o">.</span><span class="n">start</span>
+                    <span class="k">if</span> <span class="n">old_meshline</span><span class="o">.</span><span class="n">stop</span> <span class="o">&lt;</span> <span class="n">meshline</span><span class="o">.</span><span class="n">stop</span><span class="p">:</span>
+                        <span class="n">old_meshline</span><span class="o">.</span><span class="n">stop</span> <span class="o">=</span> <span class="n">meshline</span><span class="o">.</span><span class="n">stop</span>
+                <span class="k">elif</span> <span class="n">old_meshline</span><span class="o">.</span><span class="n">multiplicity</span> <span class="o">&gt;</span> <span class="n">meshline</span><span class="o">.</span><span class="n">multiplicity</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">old_meshline</span><span class="o">.</span><span class="n">start</span> <span class="o">&lt;</span> <span class="n">meshline</span><span class="o">.</span><span class="n">start</span><span class="p">:</span>
+                        <span class="n">meshline</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">old_meshline</span><span class="o">.</span><span class="n">start</span>
+                    <span class="k">if</span> <span class="n">old_meshline</span><span class="o">.</span><span class="n">stop</span> <span class="o">&gt;</span> <span class="n">meshline</span><span class="o">.</span><span class="n">stop</span><span class="p">:</span>
+                        <span class="n">meshline</span><span class="o">.</span><span class="n">stop</span> <span class="o">=</span> <span class="n">old_meshline</span><span class="o">.</span><span class="n">stop</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">old_meshline</span><span class="o">.</span><span class="n">start</span> <span class="o">&lt;</span> <span class="n">meshline</span><span class="o">.</span><span class="n">start</span><span class="p">:</span>
+                        <span class="n">meshline</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">old_meshline</span><span class="o">.</span><span class="n">start</span>
+                    <span class="k">if</span> <span class="n">old_meshline</span><span class="o">.</span><span class="n">stop</span> <span class="o">&gt;</span> <span class="n">meshline</span><span class="o">.</span><span class="n">stop</span><span class="p">:</span>
+                        <span class="n">meshline</span><span class="o">.</span><span class="n">stop</span> <span class="o">=</span> <span class="n">old_meshline</span><span class="o">.</span><span class="n">stop</span>
+
+                    <span class="n">meshlines_to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">old_meshline</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">old_meshline</span> <span class="ow">in</span> <span class="n">meshlines_to_remove</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">meshlines</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">old_meshline</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="n">meshline</span></div>
+
+<div class="viewcode-block" id="LRSpline.visualize_mesh"><a class="viewcode-back" href="../../lrspline.html#LRSplines.LRSpline.visualize_mesh">[docs]</a>    <span class="k">def</span> <span class="nf">visualize_mesh</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plots the LR-mesh.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">axs</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">meshlines</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">start</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">stop</span><span class="p">)</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">constant_value</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">constant_value</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">axis</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">axs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">axs</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">)</span>
+            <span class="n">axs</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">midpoint</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">m</span><span class="o">.</span><span class="n">midpoint</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">multiplicity</span><span class="p">),</span> <span class="n">bbox</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">M</span><span class="p">:</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">u_max</span> <span class="o">-</span> <span class="n">m</span><span class="o">.</span><span class="n">u_min</span>
+            <span class="n">h</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">v_max</span> <span class="o">-</span> <span class="n">m</span><span class="o">.</span><span class="n">v_min</span>
+
+            <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">is_overloaded</span><span class="p">():</span>
+                <span class="n">axs</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">plp</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">((</span><span class="n">m</span><span class="o">.</span><span class="n">u_min</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">v_min</span><span class="p">),</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">axs</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">plp</span><span class="o">.</span><span class="n">Rectangle</span><span class="p">((</span><span class="n">m</span><span class="o">.</span><span class="n">u_min</span><span class="p">,</span> <span class="n">m</span><span class="o">.</span><span class="n">v_min</span><span class="p">),</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">))</span>
+
+            <span class="n">axs</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">midpoint</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">m</span><span class="o">.</span><span class="n">midpoint</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">supported_b_splines</span><span class="p">)))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;dim(S) = </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">S</span><span class="p">)))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, Ivar Stangeby.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

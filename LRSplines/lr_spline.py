@@ -1,6 +1,8 @@
 import typing
 from typing import List
 
+import matplotlib.patches as plp
+import matplotlib.pyplot as plt
 import numpy as np
 
 from LRSplines.aux_split_functions import split_single_basis_function
@@ -9,6 +11,10 @@ from LRSplines.element import Element
 from LRSplines.meshline import Meshline
 
 Vector = typing.Union[typing.List['float'], np.ndarray]
+
+
+def _at_end(knots, index):
+    return abs(knots[-1] - knots[index]) < 1.0E-14
 
 
 def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> 'LRSpline':
@@ -21,6 +27,7 @@ def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> '
     :param kv: knots in v_direction
     :return: corresponding LR_spline
     """
+
     elements = []
     basis = []
     meshlines = []
@@ -34,7 +41,9 @@ def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> '
 
     for i in range(len(ku) - d1 - 1):
         for j in range(len(kv) - d2 - 1):
-            basis.append(BSpline(d1, d2, ku[i: i + d1 + 2], kv[j: j + d2 + 2]))
+            end_u = _at_end(ku, i + d1 + 1)
+            end_v = _at_end(kv, j + d2 + 1)
+            basis.append(BSpline(d1, d2, ku[i: i + d1 + 2], kv[j: j + d2 + 2], end_u=end_u, end_v=end_v))
 
     for b in basis:
         for e in elements:
@@ -200,15 +209,12 @@ class LRSpline(object):
             self._update_old_basis_function(b1, new_functions)
         else:
             new_functions.append(b1)
-            # self._update_support(b1, basis.elements_of_support)
         if self.contains_basis_function(b2):
             self._update_old_basis_function(b2, self.S)
         elif b2 in new_functions:
             self._update_old_basis_function(b2, new_functions)
         else:
             new_functions.append(b2)
-            # self._update_support(b1, basis.elements_of_support)
-
         functions_to_remove.append(basis)
 
     @staticmethod
@@ -333,17 +339,29 @@ class LRSpline(object):
             self.meshlines.remove(old_meshline)
         return False, meshline
 
-    def _update_support(self, b_spline: BSpline, elements: List[Element]) -> None:
+    def visualize_mesh(self) -> None:
         """
-        Updates the list of supported BSplines in elements, and the list of elements of support in the BSpline.
-
-        :param b_spline: b_spline to update
-        :param elements: elements to update
-        :return: None
+        Plots the LR-mesh.
         """
-
-        for element in elements:
-            if b_spline.add_to_support_if_intersects(element):
-                element.add_supported_b_spline(b_spline)
+        fig = plt.figure()
+        axs = fig.add_subplot(1, 1, 1)
+        for m in self.meshlines:
+            x = (m.start, m.stop)
+            y = (m.constant_value, m.constant_value)
+            if m.axis == 0:
+                axs.plot(y, x, color='black')
             else:
-                element.remove_supported_b_spline(b_spline)
+                axs.plot(x, y, color='black')
+            axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(m.multiplicity), bbox=dict(facecolor='white', alpha=1))
+        for m in self.M:
+            w = m.u_max - m.u_min
+            h = m.v_max - m.v_min
+
+            if m.is_overloaded():
+                axs.add_patch(plp.Rectangle((m.u_min, m.v_min), w, h, fill=True, color='red', alpha=0.2))
+            else:
+                axs.add_patch(plp.Rectangle((m.u_min, m.v_min), w, h, fill=True, color='green', alpha=0.2))
+
+            axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(len(m.supported_b_splines)))
+        plt.title('dim(S) = {}'.format(len(self.S)))
+        plt.show()
