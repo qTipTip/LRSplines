@@ -42,9 +42,24 @@ def _split(alpha_1: float, alpha_2: float, b: BSpline, m: Meshline, new_knots: n
     if m.axis == 0:  # vertical split
         b1 = BSpline(b.degree_u, b.degree_v, new_knots[:-1], b.knots_v, b.weight * alpha_1)
         b2 = BSpline(b.degree_u, b.degree_v, new_knots[1:], b.knots_v, b.weight * alpha_2)
+
+        b1.end_v = b.end_v
+        b2.end_v = b.end_v
+
+        if b.end_u:
+            b1.end_u = False
+            b2.end_u = True
+
     elif m.axis == 1:  # horizontal split
         b1 = BSpline(b.degree_u, b.degree_v, b.knots_u, new_knots[:-1], b.weight * alpha_1)
         b2 = BSpline(b.degree_u, b.degree_v, b.knots_u, new_knots[1:], b.weight * alpha_2)
+
+        b1.end_u = b.end_u
+        b2.end_u = b.end_u
+
+        if b.end_v:
+            b1.end_v = False
+            b2.end_v = True
 
     return b1, b2
 
