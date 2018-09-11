@@ -129,16 +129,14 @@ def test_evaluate_b_spline():
 
 
 def test_endpoint_interpolation():
-    ku = [0, 0, 0, 1, 2, 3, 4, 4, 4]
-    kv = [0, 0, 0, 1, 2, 3, 4, 4, 4]
+    ku = [0, 0, 0, 1]
+    kv = [3, 4, 4, 4]
 
     d1 = 2
     d2 = 2
     B = BSpline(d1, d2, ku, kv)
 
-    X = np.linspace(0, 4, 10)
-    for x in X:
-        assert B(x, 0) == 1
-        assert B(x, 4) == 1
-        assert B(0, x) == 1
-        assert B(4, x) == 1
+    assert B(0, 3) == 0
+    assert B(0, 4) == 1
+    assert B(1, 3) == 0
+    assert B(1, 4) == 0
