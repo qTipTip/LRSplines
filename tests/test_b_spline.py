@@ -1,6 +1,6 @@
 import numpy as np
 
-from LRSplines.b_spline import BSpline, intersects, _evaluate_univariate_b_spline
+from LRSplines.b_spline import BSpline, intersects, _evaluate_univariate_b_spline, _find_knot_interval
 from LRSplines.element import Element
 
 
@@ -148,3 +148,11 @@ def test_endpoint_interpolation_univariate():
     x = 1
     assert _evaluate_univariate_b_spline(x, ku, d, endpoint=True) == 1
     assert _evaluate_univariate_b_spline(x, ku, d) == 0
+
+
+def test_endpoint_find_index():
+    k = np.array([0, 0, 0, 1, 2, 3, 4])
+    x = 4
+
+    assert _find_knot_interval(x, k, endpoint=False) == -1
+    assert _find_knot_interval(x, k, endpoint=True) == 5

@@ -39,7 +39,8 @@ def _evaluate_univariate_b_spline(x: float, knots: typing.Union[Vector, np.ndarr
     :param degree: polynomial degree
     :return: B(x)
     """
-    i = _find_knot_interval(x, knots)
+    knots = np.array(knots)
+    i = _find_knot_interval(x, knots, endpoint=endpoint)
     if i == -1:
         return 0
     t = _augment_knots(knots, degree)
@@ -72,16 +73,26 @@ def _augment_knots(knots: Vector, degree: int) -> np.ndarray:
     return np.pad(knots, (degree + 1, degree + 1), 'constant', constant_values=(knots[0] - 1, knots[-1] + 1))
 
 
-def _find_knot_interval(x: float, knots: np.ndarray) -> int:
+def _find_knot_interval(x: float, knots: np.ndarray, endpoint=False) -> int:
     """
     Finds the index i such that knots[i] <= x < knots[i+1]
 
+    :param endpoint:
     :param x: point of interest
     :param knots: knot vector
     :return: index i
     """
+
+    # if we have requested end point, and are at the end, return corresponding index.
+    if endpoint and (knots[-2] <= x <= knots[-1]):
+        i = max(np.argmax(knots < x) - 1, 0)
+        return len(knots) - i - 2
+
+    # if we are utside the domain, return -1
     if x < knots[0] or x >= knots[-1]:
         return -1
+    # otherwise, return the corresponding index
+
     return np.max(np.argmax(knots > x) - 1, 0)
 
 
