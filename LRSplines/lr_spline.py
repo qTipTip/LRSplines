@@ -41,7 +41,7 @@ def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> '
         for j in range(len(kv) - d2 - 1):
             end_u = _at_end(ku, i + d1 + 1)
             end_v = _at_end(kv, j + d2 + 1)
-            basis.append(BSpline(d1, d2, ku[i: i + d1 + 2], kv[j: j + d2 + 2]))
+            basis.append(BSpline(d1, d2, ku[i: i + d1 + 2], kv[j: j + d2 + 2], end_u=end_u, end_v=end_v))
 
     for b in basis:
         for e in elements:

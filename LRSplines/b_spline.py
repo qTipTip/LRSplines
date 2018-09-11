@@ -141,7 +141,8 @@ class BSpline(object):
         self.knots_v = np.array(knots_v, dtype=np.float64)
         self.weight = weight
         self.coefficient = 1
-
+        self.end_u = end_u
+        self.end_v = end_v
         self.elements_of_support: ElementVector = []
 
         # for cached calls

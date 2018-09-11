@@ -55,3 +55,38 @@ def test_lr_spline_partition_of_unity_tensor_product(N):
             z[i, j] = LR(x[i], x[j])
     expected = np.ones((N, N))
     np.testing.assert_array_almost_equal(z, expected)
+
+
+@pytest.mark.parametrize("N", [2, 4, 6, 8])
+def test_lr_spline_partition_of_unity_at_end(N):
+    d1, d2 = 2, 2
+    ku = [0, 0, 0, 0.5, 0.75, 1, 1, 1]
+    LR = init_tensor_product_LR_spline(d1, d2, ku, ku)
+    expected = np.ones(N)
+
+    x = np.linspace(0, 1, N, endpoint=True)
+    np.random.seed(42)
+
+    z = np.zeros(N)
+    for i in range(N):
+        z[i] = LR(x[i], 1)
+    np.testing.assert_array_almost_equal(z, expected)
+
+    z = np.zeros(N)
+    for i in range(N):
+        z[i] = LR(1, x[i])
+    np.testing.assert_array_almost_equal(z, expected)
+
+
+def test_lr_spline_partition_at_end_uv_point():
+    d1, d2 = 2, 2
+    ku = [0, 0, 0, 0.5, 0.75, 1, 1, 1]
+    kv = [0, 0, 0, 1, 2, 3, 3, 3]
+    LR = init_tensor_product_LR_spline(d1, d2, ku, kv)
+
+    e = LR._find_element_containing_point(1, 3)
+    for b in e.supported_b_splines:
+        assert b.end_v
+        assert 3 in b.knots_v
+        if b.end_u:
+            assert 1 in b.knots_u
