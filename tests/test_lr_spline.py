@@ -1,7 +1,5 @@
 from collections import Counter
 
-import pytest
-
 from LRSplines.b_spline import BSpline
 from LRSplines.element import Element
 from LRSplines.lr_spline import init_tensor_product_LR_spline, LRSpline, _at_end
@@ -115,52 +113,6 @@ def test_lr_spline_insert_line_multiple():
 
     assert all([LR.contains_element(e) for e in expected_elements])
     assert len(LR.M) == 10
-
-
-@pytest.mark.skip(reason='This is probably wrong - I havent checked the exact dimension')
-def test_lr_spline_insert_multiple():
-    LR = init_tensor_product_LR_spline(2, 2, [0, 0, 0, 1, 2, 4, 5, 6, 6, 6], [0, 0, 0, 1, 2, 4, 5, 6, 6, 6])
-    m1 = Meshline(1, 5, constant_value=3, axis=0)
-    m2 = Meshline(1, 5, constant_value=3, axis=1)
-
-    assert len(LR.S) == 49
-    LR.insert_line(m1)
-    assert len(LR.S) == 52
-    LR.insert_line(m2)
-    assert len(LR.S) == 62
-
-    # assorted expected functions
-    b1 = BSpline(2, 2, [1, 2, 3, 4], [2, 3, 4, 5])
-    b2 = BSpline(2, 2, [2, 3, 4, 5], [2, 3, 4, 5])
-    b3 = BSpline(2, 2, [1, 2, 3, 4], [2, 3, 4, 5])
-    b4 = BSpline(2, 2, [1, 2, 4, 5], [3, 4, 5, 6])
-
-    assert b1 in LR.S
-    assert b2 in LR.S
-    assert b3 in LR.S
-    assert b4 in LR.S
-
-
-@pytest.mark.skip(reason='This test is platform dependent. Passes on Linux, fails on OSX')
-def test_lr_spline_cleanup():
-    LR = init_tensor_product_LR_spline(1, 1, [0, 1, 2], [0, 1, 2])
-    M = Meshline(0, 2, constant_value=0.5, axis=0)
-    LR.insert_line(M)
-
-    elements = [
-        Element(0, 0, 0.5, 1),
-        Element(0, 1, 0.5, 2),
-        Element(0.5, 0, 1, 1),
-        Element(0.5, 1, 1, 2),
-        Element(1, 0, 2, 1),
-        Element(1, 1, 2, 2)
-    ]
-
-    b1 = LR.S[0]
-    b2 = LR.S[1]
-
-    assert all(e in b1.elements_of_support for e in elements[0:4])
-    assert all(e in b2.elements_of_support for e in elements[2:])
 
 
 def test_lr_spline_merge_meshlines_count():
