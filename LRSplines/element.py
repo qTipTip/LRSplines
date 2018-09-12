@@ -27,7 +27,7 @@ class Element(object):
         self.u_max = u_max
         self.v_max = v_max
 
-        self.supported_b_splines: list = []
+        self.supported_b_splines: BasisFunctions = []
 
     def fetch_neighbours(self):
         """

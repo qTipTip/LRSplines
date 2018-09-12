@@ -119,7 +119,6 @@ class BSpline(object):
     """
     Represents a single weighted tensor product B-spline with associated methods and fields.
     """
-    coefficient: float
 
     def __init__(self, degree_u: int, degree_v: int, knots_u: Vector, knots_v: Vector, weight: float = 1, end_u=False,
                  end_v=False) -> None:
