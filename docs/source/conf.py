@@ -23,7 +23,9 @@ sys.path.insert(0, os.path.abspath('../..'))
 
 # fixes _tkinter problem for autodoc
 autodoc_mock_imports = ['_tkinter']
+import matplotlib
 
+matplotlib.use('agg')
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
