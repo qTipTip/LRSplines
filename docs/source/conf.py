@@ -21,6 +21,8 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('../..'))
 
+# fixes _tkinter problem for autodoc
+autodoc_mock_imports = ['_tkinter']
 
 # -- General configuration ------------------------------------------------
 
