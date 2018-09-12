@@ -2,6 +2,6 @@ BSpline
 =======
 
 .. module:: LRSplines
-.. autoclass:: BSpline
-  :members:
 
+.. autoclass:: LRSplines.BSpline
+    :members:

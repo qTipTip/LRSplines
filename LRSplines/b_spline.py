@@ -10,22 +10,6 @@ Vector = typing.List['float']
 ElementVector = typing.List['Element']
 
 
-def intersects(b_spline: "BSpline", element: "Element") -> bool:
-    """
-    Returns true if the support of b_spline intersects the element with positive area.
-
-    :param b_spline: b_spline whose support is to be checked
-    :param element: element whose domain is to be checked
-    :return: true or false
-    """
-
-    intersection_u = min(b_spline.knots_u[-1], element.u_max) - max(b_spline.knots_u[0], element.u_min)
-    intersection_v = min(b_spline.knots_v[-1], element.v_max) - max(b_spline.knots_v[0], element.v_min)
-
-    if intersection_u <= 0 or intersection_v <= 0:
-        return False
-    else:
-        return True
 
 
 def _evaluate_univariate_b_spline(x: float, knots: typing.Union[Vector, np.ndarray], degree: int,
@@ -168,7 +152,7 @@ class BSpline(object):
         :return: true or false
         """
 
-        if intersects(self, element):
+        if self.intersects(element):
             self.elements_of_support.append(element)
             return True
         else:
@@ -201,6 +185,23 @@ class BSpline(object):
             return False
         return np.allclose(self.knots_u, other.knots_u, atol=1.0e-14) and np.allclose(self.knots_v, other.knots_v,
                                                                                       atol=1.0e-14)
+
+    def intersects(self, element: "Element") -> bool:
+        """
+        Returns true if the support of b_spline intersects the element with positive area.
+
+        :param b_spline: b_spline whose support is to be checked
+        :param element: element whose domain is to be checked
+        :return: true or false
+        """
+
+        intersection_u = min(self.knots_u[-1], element.u_max) - max(self.knots_u[0], element.u_min)
+        intersection_v = min(self.knots_v[-1], element.v_max) - max(self.knots_v[0], element.v_min)
+
+        if intersection_u <= 0 or intersection_v <= 0:
+            return False
+        else:
+            return True
 
     @property
     def knot_average(self) -> typing.Tuple[float, float]:
