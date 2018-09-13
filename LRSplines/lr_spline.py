@@ -51,13 +51,15 @@ def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> '
                 e.add_supported_b_spline(b)
 
     for i in range(len(unique_ku)):
-        new_m = Meshline(start=unique_kv[0], stop=unique_kv[-1], constant_value=unique_ku[i], axis=0)
-        new_m.set_multiplicity(ku)
-        meshlines.append(new_m)
+        for j in range(len(unique_kv) - 1):
+            new_m = Meshline(start=unique_kv[j], stop=unique_kv[j + 1], constant_value=unique_ku[i], axis=0)
+            new_m.set_multiplicity(ku)
+            meshlines.append(new_m)
     for i in range(len(unique_kv)):
-        new_m = Meshline(start=unique_ku[0], stop=unique_ku[-1], constant_value=unique_kv[i], axis=1)
-        new_m.set_multiplicity(kv)
-        meshlines.append(new_m)
+        for j in range(len(unique_ku) - 1):
+            new_m = Meshline(start=unique_ku[j], stop=unique_ku[j + 1], constant_value=unique_kv[i], axis=1)
+            new_m.set_multiplicity(kv)
+            meshlines.append(new_m)
 
     return LRSpline(elements, basis, meshlines)
 
@@ -78,6 +80,7 @@ class LRSpline(object):
         self.M = mesh
         self.S = basis
         self.meshlines = meshlines
+        self.last_element = None
 
     def refine_by_element_full(self, e: Element) -> None:
         """
@@ -273,11 +276,14 @@ class LRSpline(object):
         return total
 
     def _find_element_containing_point(self, u, v):
+        if self.last_element and self.last_element.contains(u, v):
+            return self.last_element
         for e in self.M:
             if e.contains(u, v):
                 break
         else:
             raise ValueError('({}, {}) is not in the domain'.format(u, v))
+        self.last_element = e
         return e
 
     def merge_meshlines(self, meshline: Meshline) -> typing.Tuple[bool, Meshline]:
