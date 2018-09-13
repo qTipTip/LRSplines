@@ -173,3 +173,17 @@ def test_lr_spline_at_end():
     assert _at_end(k, 9)
     assert _at_end(k, 10)
     assert _at_end(k, 11)
+
+
+def test_lr_spline_dimension_bilinear():
+    ku = [0, 0, 1, 2, 2]
+    kv = [0, 0, 1, 1]
+
+    du = 1
+    dv = 1
+
+    LR = init_tensor_product_LR_spline(du, dv, ku, kv)
+    m = Meshline(1, 2, constant_value=0.5, axis=1)
+    LR.insert_line(m)
+
+    assert len(LR.S) == 7
