@@ -1,10 +1,12 @@
 import numpy as np
+import pytest
 
 from LRSplines.b_spline import BSpline, _evaluate_univariate_b_spline, _find_knot_interval
 from LRSplines.element import Element
 
 
-def test_b_spline_init():
+@pytest.fixture(scope='function')
+def B():
     du = 2
     dv = 2
     ku = [0, 1, 2, 3]
@@ -12,24 +14,20 @@ def test_b_spline_init():
 
     w = 1
 
-    B = BSpline(du, dv, ku, kv, w)
+    return BSpline(du, dv, ku, kv, w)
 
+
+def test_b_spline_init(B):
+    ku = [0, 1, 2, 3]
+    kv = [3, 4, 5, 6]
+    du = 2
+    dv = 2
     np.testing.assert_array_almost_equal(B.knots_u, ku)
     np.testing.assert_array_almost_equal(B.knots_v, kv)
     assert (B.degree_v, B.degree_v) == (dv, du)
-    assert B.weight == w
 
 
-def test_b_spline_intersects():
-    du = 2
-    dv = 2
-    ku = [0, 1, 2, 3]
-    kv = [3, 4, 5, 6]
-
-    w = 1
-
-    B = BSpline(du, dv, ku, kv, w)
-
+def test_b_spline_intersects(B):
     e1 = Element(2, -1, 4, 4)
     e2 = Element(10, 10, 20, 20)
     e3 = Element(1, 4, 2, 5)
@@ -39,16 +37,7 @@ def test_b_spline_intersects():
     assert B.intersects(e3)
 
 
-def test_b_spline_add_to_support_if_intersects():
-    du = 2
-    dv = 2
-    ku = [0, 1, 2, 3]
-    kv = [3, 4, 5, 6]
-
-    w = 1
-
-    B = BSpline(du, dv, ku, kv, w)
-
+def test_b_spline_add_to_support_if_intersects(B):
     e1 = Element(2, -1, 4, 4)
     e2 = Element(10, 10, 20, 20)
     e3 = Element(1, 4, 2, 5)
@@ -65,16 +54,7 @@ def test_b_spline_add_to_support_if_intersects():
     assert e4 not in B.elements_of_support
 
 
-def test_b_spline_remove_from_support():
-    du = 2
-    dv = 2
-    ku = [0, 1, 2, 3]
-    kv = [3, 4, 5, 6]
-
-    w = 1
-
-    B = BSpline(du, dv, ku, kv, w)
-
+def test_b_spline_remove_from_support(B):
     e1 = Element(2, -1, 4, 4)
     e2 = Element(10, 10, 20, 20)
     e3 = Element(1, 4, 2, 5)
