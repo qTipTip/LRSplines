@@ -345,7 +345,7 @@ class LRSpline(object):
             self.meshlines.remove(old_meshline)
         return False, meshline
 
-    def visualize_mesh(self) -> None:
+    def visualize_mesh(self, multiplicity=True, overloading=True) -> None:
         """
         Plots the LR-mesh.
         """
@@ -358,16 +358,18 @@ class LRSpline(object):
                 axs.plot(y, x, color='black')
             else:
                 axs.plot(x, y, color='black')
-            axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(m.multiplicity), bbox=dict(facecolor='white', alpha=1))
+            if multiplicity:
+                axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(m.multiplicity),
+                         bbox=dict(facecolor='white', alpha=1))
         for m in self.M:
             w = m.u_max - m.u_min
             h = m.v_max - m.v_min
 
-            if m.is_overloaded():
-                axs.add_patch(plp.Rectangle((m.u_min, m.v_min), w, h, fill=True, color='red', alpha=0.2))
-            else:
-                axs.add_patch(plp.Rectangle((m.u_min, m.v_min), w, h, fill=True, color='green', alpha=0.2))
-
-            axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(len(m.supported_b_splines)))
+            if overloading:
+                if m.is_overloaded():
+                    axs.add_patch(plp.Rectangle((m.u_min, m.v_min), w, h, fill=True, color='red', alpha=0.2))
+                else:
+                    axs.add_patch(plp.Rectangle((m.u_min, m.v_min), w, h, fill=True, color='green', alpha=0.2))
+                axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(len(m.supported_b_splines)))
         plt.title('dim(S) = {}'.format(len(self.S)))
         plt.show()

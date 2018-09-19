@@ -190,5 +190,4 @@ def test_lr_spline_dimension_bilinear():
     LR = init_tensor_product_LR_spline(du, dv, ku, kv)
     m = Meshline(1, 2, constant_value=0.5, axis=1)
     LR.insert_line(m)
-
     assert len(LR.S) == 7
