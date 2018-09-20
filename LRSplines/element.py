@@ -27,7 +27,7 @@ class Element(object):
         self.u_max = u_max
         self.v_max = v_max
 
-        self.supported_b_splines: list = []
+        self.supported_b_splines: BasisFunctions = []
 
     def fetch_neighbours(self):
         """
@@ -71,7 +71,10 @@ class Element(object):
 
         :param b_spline: B-spline to remove
         """
-        self.supported_b_splines.remove(b_spline)
+        if self.has_supported_b_spline(b_spline):
+            self.supported_b_splines.remove(b_spline)
+            return True
+        return False
 
     def has_supported_b_spline(self, b_spline) -> bool:
         """
@@ -98,6 +101,7 @@ class Element(object):
         :return: right half of element.
         """
 
+        # Create new element and resize old.
         new_element = None
         if axis == 0:  # vertical split
             if not self.u_min < split_value < self.u_max:
@@ -110,6 +114,16 @@ class Element(object):
                 return None
             new_element = Element(self.u_min, split_value, self.u_max, self.v_max)
             self.v_max = split_value
+
+        # Check all supported basis functions if their support has changed.
+        supported_basis_to_remove = []
+        for basis in self.supported_b_splines:
+            if basis.add_to_support_if_intersects(new_element):
+                new_element.add_supported_b_spline(basis)
+
+            if not basis.intersects(self):
+                supported_basis_to_remove.append(basis)
+                basis.remove_from_support(self)
 
         return new_element
 

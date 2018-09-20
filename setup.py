@@ -8,5 +8,5 @@ setup(
     license='',
     author='Ivar Stangeby',
     author_email='istangeby@gmail.com',
-    description='', install_requires=['numpy', 'pytest']
+    description='', install_requires=['numpy', 'pytest', 'matplotlib']
 )
