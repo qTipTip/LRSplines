@@ -9,6 +9,22 @@ Vector = typing.List['float']
 ElementVector = typing.List['Element']
 
 
+def memoize(f):
+    class MemoClass():
+        def __init__(self, f):
+            self.f = f
+            self.cache = {}
+
+        def __call__(self, v, knots, deg, end):
+            key = '{} {} {}'.format(v, deg, end) + str(knots.tostring())
+            if key not in self.cache:
+                self.cache[key] = f(v, knots, deg, end)
+            return self.cache[key]
+
+    return MemoClass(f)
+
+
+@memoize
 def _evaluate_univariate_b_spline(x: float, knots: typing.Union[Vector, np.ndarray], degree: int,
                                   endpoint=False) -> float:
     """
@@ -139,10 +155,10 @@ class BSpline(object):
 
         # return self.weight * self._univariate_u(u) * self._univariate_v(v)
         return self.weight * _evaluate_univariate_b_spline(u, self.knots_u, self.degree_u,
-                                                           endpoint=self.end_u) * _evaluate_univariate_b_spline(v,
-                                                                                                                self.knots_v,
-                                                                                                                self.degree_v,
-                                                                                                                endpoint=self.end_v)
+                                                           self.end_u) * _evaluate_univariate_b_spline(v,
+                                                                                                       self.knots_v,
+                                                                                                       self.degree_v,
+                                                                                                       self.end_v)
 
     def add_to_support_if_intersects(self, element: "Element") -> bool:
         """
