@@ -59,7 +59,10 @@ def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> '
         new_m.set_multiplicity(kv)
         meshlines.append(new_m)
 
-    return LRSpline(elements, basis, meshlines)
+    u_range = [ku[0], ku[-1]]
+    v_range = [kv[0], kv[-1]]
+
+    return LRSpline(elements, basis, meshlines, u_range, v_range)
 
 
 class LRSpline(object):
@@ -68,16 +71,21 @@ class LRSpline(object):
     defined on M.
     """
 
-    def __init__(self, mesh: List['Element'], basis: List['BSpline'], meshlines: List['Meshline']) -> None:
+    def __init__(self, mesh: List['Element'], basis: List['BSpline'], meshlines: List['Meshline'], u_range=None,
+                 v_range=None) -> None:
         """
         Initialize an LR Spline with associated set of elements, and set of basis functions.
 
+        :param range1:
+        :param range2:
         :param mesh: elements constituting the LR mesh
         :param basis: basis functions defined over the LR mesh
         """
         self.M = mesh
         self.S = basis
         self.meshlines = meshlines
+        self.u_range = u_range
+        self.v_range = v_range
 
     def refine_by_element_full(self, e: Element) -> None:
         """
