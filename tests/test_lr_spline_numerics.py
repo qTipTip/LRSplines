@@ -122,7 +122,7 @@ def test_lr_spline_partition_at_end_uv_point():
     kv = [0, 0, 0, 1, 2, 3, 3, 3]
     LR = init_tensor_product_LR_spline(d1, d2, ku, kv)
 
-    e = LR._find_element_containing_point(1, 3)
+    e = LR.find_element_containing_point(1, 3)
     for b in e.supported_b_splines:
         assert b.end_v
         assert 3 in b.knots_v

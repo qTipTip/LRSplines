@@ -98,7 +98,9 @@ class LRSpline(object):
 
         :param e: element to refine
         """
-        raise NotImplementedError('LRSpline.{} is not implemented yet'.format(self.refine_by_element_minimal.__name__))
+        for i in range(2):
+            m = self.get_minimal_span_meshline(e, i)
+            self.insert_line(m)
 
     @staticmethod
     def get_minimal_span_meshline(e: Element, axis) -> Meshline:
@@ -124,6 +126,25 @@ class LRSpline(object):
 
         new_meshline = Meshline(smallest_start, smallest_stop, constant_value, axis)
         return new_meshline
+
+    @staticmethod
+    def get_full_span_meshline(e: Element, axis) -> Meshline:
+        """
+        Finds the meshline in direction prescribed by the axis that splits all the supported B-splines on the element.
+        :param e: element to refine by
+        :param axis: direction to look for split, 0 vertical, 1 horizontal
+        :return: full span meshline
+        """
+        longest_start = None
+        longest_stop = None
+        for basis in e.supported_b_splines:
+            k = basis.knots_v if axis == 0 else basis.knots_u
+            current_length = abs(k[-1] - k[0])
+            if longest_start is None or longest_stop is None or current_length > (longest_stop - longest_start):
+                longest_start = k[0]
+                longest_stop = k[-1]
+        constant_value = e.midpoint[axis]
+        return Meshline(longest_start, longest_stop, constant_value, axis)
 
     def insert_line(self, meshline: Meshline, debug=False) -> None:
         """
@@ -268,14 +289,14 @@ class LRSpline(object):
         :return: L(u, v)
         """
 
-        e = self._find_element_containing_point(u, v)
+        e = self.find_element_containing_point(u, v)
 
         total = 0
         for b in e.supported_b_splines:
             total += b.coefficient * b(u, v)
         return total
 
-    def _find_element_containing_point(self, u, v):
+    def find_element_containing_point(self, u, v):
         if self.last_element and self.last_element.contains(u, v):
             return self.last_element
         for e in self.M:
@@ -373,3 +394,27 @@ class LRSpline(object):
                 axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(len(m.supported_b_splines)))
         plt.title('dim(S) = {}'.format(len(self.S)))
         plt.show()
+
+    def refine(self, beta: float, error_function: typing.Callable, refinement_strategy='minimal') -> None:
+        """
+        Refine the LR-mesh in order to introduce beta * dim(S) new degrees of freedom.
+        The error function takes an element and returns the elemental error contribution.
+        :param refinement_strategy: the refinement strategy used for splitting a single element.
+        :param beta: growth parameter
+        :param error_function: evaluates the error contribution from a given element
+        :return: None
+        """
+
+        previous_dim = len(self.S)
+        number_of_inserted_lines = 0
+        while len(self.S) <= previous_dim * (1 + beta):
+            element_to_refine = max(self.M, key=error_function)
+
+            if refinement_strategy is 'minimal':
+                m = self.get_minimal_span_meshline(element_to_refine, axis=number_of_inserted_lines % 2)
+            elif refinement_strategy is 'full':
+                m = self.get_full_span_meshline(element_to_refine, axis=number_of_inserted_lines % 2)
+            else:
+                raise NotImplemented('The requested refinement strategy is not implemented yet')
+            self.insert_line(m)
+            number_of_inserted_lines += 1
