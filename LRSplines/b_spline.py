@@ -1,5 +1,4 @@
 import typing
-from functools import lru_cache
 
 import numpy as np
 
@@ -8,8 +7,6 @@ if False:
 
 Vector = typing.List['float']
 ElementVector = typing.List['Element']
-
-
 
 
 def _evaluate_univariate_b_spline(x: float, knots: typing.Union[Vector, np.ndarray], degree: int,
@@ -92,7 +89,6 @@ def cached_univariate(degree: int, knots: typing.Union[typing.List[float], np.nd
     :return: cached univariate evaluation.
     """
 
-    @lru_cache(maxsize=128)
     def cached_evaluation(x):
         return _evaluate_univariate_b_spline(x, knots, degree, endpoint=endpoint)
 
@@ -141,7 +137,12 @@ class BSpline(object):
         :return: B(u, v)
         """
 
-        return self.weight * self._univariate_u(u) * self._univariate_v(v)
+        # return self.weight * self._univariate_u(u) * self._univariate_v(v)
+        return self.weight * _evaluate_univariate_b_spline(u, self.knots_u, self.degree_u,
+                                                           endpoint=self.end_u) * _evaluate_univariate_b_spline(v,
+                                                                                                                self.knots_v,
+                                                                                                                self.degree_v,
+                                                                                                                endpoint=self.end_v)
 
     def add_to_support_if_intersects(self, element: "Element") -> bool:
         """
@@ -223,3 +224,12 @@ class BSpline(object):
 
     def __hash__(self):
         return hash(tuple(self.knots_v)) * self.degree_u + hash(tuple(self.knots_u)) * self.degree_v
+
+    @property
+    def overloaded(self) -> bool:
+        """
+        True if all its supporting elements are overloaded.
+        :return: True or false
+        """
+
+        return all([e.is_overloaded() for e in self.elements_of_support])

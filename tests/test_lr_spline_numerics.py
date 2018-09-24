@@ -40,7 +40,6 @@ def test_lr_spline_partition_of_unity_two_interior(N):
     np.testing.assert_array_almost_equal(z, expected)
 
 
-@pytest.mark.skip('Endpoints not working under refinement yet')
 @pytest.mark.parametrize("N", [2, 4, 6, 8])
 def test_lr_spline_partition_of_unity_full(N):
     LR = init_tensor_product_LR_spline(2, 2, [0, 0, 0, 1, 2, 4, 5, 6, 6, 6], [0, 0, 0, 1, 2, 4, 5, 6, 6, 6])
@@ -58,7 +57,6 @@ def test_lr_spline_partition_of_unity_full(N):
     np.testing.assert_array_almost_equal(z, expected)
 
 
-@pytest.mark.skip('Endpoints not working under refinement yet')
 @pytest.mark.parametrize("N", [2, 4, 6, 8])
 def test_lr_spline_partition_of_unity_two_full(N):
     d1, d2 = 2, 2

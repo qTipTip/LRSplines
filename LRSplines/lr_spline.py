@@ -426,3 +426,58 @@ class LRSpline(object):
                 raise NotImplemented('The requested refinement strategy is not implemented yet')
             self.insert_line(m)
             number_of_inserted_lines += 1
+
+    def mesh_to_array(self, N=20):
+        """
+        Returns the set of meshlines as an array of size (len(self.meshlines), 2, N) for transformation and plotting purposes (IGA).
+
+        :param N: Number of samples along each meshline
+        :return: np.ndarray
+        """
+        M = len(self.meshlines)
+        meshlines = np.zeros((M, 2, N))
+
+        for i, meshline in enumerate(self.meshlines):
+            line_x = np.linspace(meshline.constant_value, meshline.constant_value, N)
+            line_y = np.linspace(meshline.start, meshline.stop, N)
+
+            if meshline.axis == 0:
+                meshlines[i] = (line_x, line_y)
+            else:
+                meshlines[i] = (line_y, line_x)
+
+        return meshlines
+
+    def peelable(self):
+        """
+        Returns true if the peeling algorithms terminates with
+        :return:
+        """
+
+        S_LD = self.S
+        M_LD = self.M
+
+        elements_to_remove = []
+        for e in M_LD:
+            if not e.is_overloaded():
+                elements_to_remove.append(e)
+                for b in e.supported_b_splines:
+                    try:
+                        S_LD.remove(b)
+                    except ValueError:
+                        pass
+
+        changed = True
+        while changed:
+            changed = False
+            for e in M_LD:
+                candidates = [b for b in e.supported_b_splines if b in S_LD]
+                if len(candidates) == 1:
+                    M_LD.remove(e)
+                    S_LD.remove(candidates[0])
+                    changed = True
+
+        if len(S_LD) == 0:
+            return True
+        else:
+            return False

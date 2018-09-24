@@ -87,6 +87,21 @@ def test_evaluate_univariate_b_spline():
         np.testing.assert_almost_equal(_evaluate_univariate_b_spline(x, k, d), exact(x))
 
 
+def test_evaluate_univariate_b_spline_two():
+    d = 1
+    k = [0, 0, 1]
+    X = np.linspace(0, 1, 200)
+
+    def exact(x):
+        if 0 <= x <= 1:
+            return 1 - x
+        else:
+            return 0
+
+    for x in X:
+        np.testing.assert_almost_equal(_evaluate_univariate_b_spline(x, k, d, endpoint=True), exact(x))
+
+
 def test_evaluate_univariate_b_spline_outside_knots():
     d = 2
     k = [0, 1, 2, 3]
@@ -118,6 +133,8 @@ def test_endpoint_interpolation():
 
     assert B(0, 3) == 0
     assert B(0, 4) == 1
+    assert B._univariate_u(0) == 1
+    assert B._univariate_v(4) == 1
     assert B(1, 3) == 0
     assert B(1, 4) == 0
 
@@ -136,3 +153,8 @@ def test_endpoint_find_index():
 
     assert _find_knot_interval(x, k, endpoint=False) == -1
     assert _find_knot_interval(x, k, endpoint=True) == 5
+
+
+def test_cached_univariate():
+    B = BSpline(2, 2, [0.75, 0.875, 1, 1], [0, 1, 1, 1], end_v=True)
+    assert B._univariate_v(1) == 1

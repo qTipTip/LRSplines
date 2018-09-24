@@ -1,6 +1,5 @@
-import matplotlib.pyplot as plt
 import matplotlib.patches as plp
-from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
 
 from LRSplines import init_tensor_product_LR_spline, Meshline, np
 
@@ -38,7 +37,12 @@ def plot_basis_support(LR, basis_function, axis=False, hatch='//'):
         xy = basis_function.knots_u[0], basis_function.knots_v[0]
         w = basis_function.knots_u[-1] - basis_function.knots_u[0]
         h = basis_function.knots_v[-1] - basis_function.knots_v[0]
-        basis_patch = plp.Rectangle(xy, w, h, hatch=hatch, fill=False, linewidth=0.2)
+
+        if basis_function.end_v or basis_function.end_u:
+            c = 'red'
+        else:
+            c = 'green'
+        basis_patch = plp.Rectangle(xy, w, h, hatch=hatch, fill=True, linewidth=0.2, color=c)
 
         axs.add_patch(basis_patch)
     if not axis:
