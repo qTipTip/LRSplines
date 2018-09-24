@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 
+from LRSplines import init_tensor_product_LR_spline
 from LRSplines.b_spline import BSpline, _evaluate_univariate_b_spline, _find_knot_interval
 from LRSplines.element import Element
 
@@ -158,3 +159,7 @@ def test_endpoint_find_index():
 def test_cached_univariate():
     B = BSpline(2, 2, [0.75, 0.875, 1, 1], [0, 1, 1, 1], end_v=True)
     assert B._univariate_v(1) == 1
+
+
+def test_univariate():
+    lr = init_tensor_product_LR_spline(1, 1, [0, 0, 1, 2, 2], [0, 0, 1, 1])

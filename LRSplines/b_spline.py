@@ -15,10 +15,11 @@ def memoize(f):
             self.f = f
             self.cache = {}
 
-        def __call__(self, v, knots, deg, end):
-            key = '{} {} {}'.format(v, deg, end) + str(knots.tostring())
+        def __call__(self, x, knots, degree, endpoint=False):
+            knots = np.array(knots)
+            key = '{} {} {}'.format(x, degree, endpoint) + str(knots.tostring())
             if key not in self.cache:
-                self.cache[key] = f(v, knots, deg, end)
+                self.cache[key] = f(x, knots, degree, endpoint)
             return self.cache[key]
 
     return MemoClass(f)
