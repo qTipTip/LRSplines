@@ -11,7 +11,7 @@ BasisFunctions = typing.List[BSpline]
 
 class Element(object):
 
-    def __init__(self, u_min: float, v_min: float, u_max: float, v_max: float) -> None:
+    def __init__(self, u_min: float, v_min: float, u_max: float, v_max: float, level: int = 0) -> None:
         """
         Initialize an Element (a rectangle) with lower left corner (u_min, v_min)
         and upper right corner (u_max, v_max)
@@ -28,6 +28,7 @@ class Element(object):
         self.v_max = v_max
 
         self.supported_b_splines: BasisFunctions = []
+        self.level = level
 
     def fetch_neighbours(self):
         """
@@ -106,13 +107,15 @@ class Element(object):
         if axis == 0:  # vertical split
             if not self.u_min < split_value < self.u_max:
                 return None
-            new_element = Element(split_value, self.v_min, self.u_max, self.v_max)
+            new_element = Element(split_value, self.v_min, self.u_max, self.v_max, level=self.level + 1)
+            self.level += 1
             self.u_max = split_value
 
         elif axis == 1:  # horizontal split
             if not self.v_min < split_value < self.v_max:
                 return None
-            new_element = Element(self.u_min, split_value, self.u_max, self.v_max)
+            new_element = Element(self.u_min, split_value, self.u_max, self.v_max, level=self.level + 1)
+            self.level += 1
             self.v_max = split_value
 
         # Check all supported basis functions if their support has changed.
