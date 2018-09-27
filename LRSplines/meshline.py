@@ -6,7 +6,7 @@ from LRSplines.b_spline import BSpline
 from LRSplines.element import Element
 
 
-def hierarchichal_meshline_rectangle(min_u, min_v, max_u, max_v, step=0.5):
+def hierarchical_meshline_rectangle(min_u, min_v, max_u, max_v, step=0.5):
     """
     Produces a uniform grid of meshlines over the given rectangle with given knot interval lenght.
     For use in quick sketching of hierarchichal meshes.
@@ -19,10 +19,10 @@ def hierarchichal_meshline_rectangle(min_u, min_v, max_u, max_v, step=0.5):
     """
     meshlines = [
                     Meshline(start=min_u, stop=max_u, constant_value=c, axis=1)
-                    for c in [min_u + step + step * i for i in range(int((max_u - min_u) / step) - 1)]
+                    for c in [min_v + step + step * i for i in range(int((max_v - min_v) / step) - 1)]
                 ] + [
                     Meshline(start=min_v, stop=max_v, constant_value=c, axis=0)
-                    for c in [min_v + step + step * i for i in range(int((max_v - min_v) / step) - 1)]
+                    for c in [min_u + step + step * i for i in range(int((max_u - min_u) / step) - 1)]
                 ]
     return meshlines
 
