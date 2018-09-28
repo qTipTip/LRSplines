@@ -64,7 +64,7 @@ def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> '
     u_range = [ku[0], ku[-1]]
     v_range = [kv[0], kv[-1]]
 
-    return LRSpline(elements, basis, meshlines, u_range, v_range)
+    return LRSpline(elements, basis, meshlines, u_range, v_range, unique_ku, unique_kv)
 
 
 class LRSpline(object):
@@ -74,7 +74,7 @@ class LRSpline(object):
     """
 
     def __init__(self, mesh: List['Element'], basis: List['BSpline'], meshlines: List['Meshline'], u_range=None,
-                 v_range=None) -> None:
+                 v_range=None, unique_global_knots_u=None, unique_global_knots_v=None) -> None:
         """
         Initialize an LR Spline with associated set of elements, and set of basis functions.
 
@@ -83,6 +83,8 @@ class LRSpline(object):
         :param mesh: elements constituting the LR mesh
         :param basis: basis functions defined over the LR mesh
         """
+        self.global_knots_u = np.asarray(unique_global_knots_u, dtype=np.float64)
+        self.global_knots_v = np.asarray(unique_global_knots_v, dtype=np.float64)
         self.M = mesh
         self.S = basis
         self.meshlines = meshlines
@@ -182,6 +184,14 @@ class LRSpline(object):
 
         if meshline_already_exists:
             return
+
+        # update the list of global tensorproduct knots
+        if meshline.axis == 0:
+            i = np.searchsorted(self.global_knots_u, meshline.constant_value, 'left')
+            self.global_knots_u = np.insert(self.global_knots_u, i, meshline.constant_value)
+        elif meshline.axis == 1:
+            i = np.searchsorted(self.global_knots_v, meshline.constant_value, 'left')
+            self.global_knots_v = np.insert(self.global_knots_v, i, meshline.constant_value)
 
         # step 1
         # split B-splines against new meshline
@@ -374,7 +384,7 @@ class LRSpline(object):
             self.meshlines.remove(old_meshline)
         return False, meshline
 
-    def visualize_mesh(self, multiplicity=True, overloading=True) -> None:
+    def visualize_mesh(self, multiplicity=True, overloading=True, text=True, relative=True) -> None:
         """
         Plots the LR-mesh.
         """
@@ -384,9 +394,9 @@ class LRSpline(object):
             x = (m.start, m.stop)
             y = (m.constant_value, m.constant_value)
             if m.axis == 0:
-                axs.plot(y, x, color='black')
+                axs.plot(y, x, color='black', linewidth=0.2)
             else:
-                axs.plot(x, y, color='black')
+                axs.plot(x, y, color='black', linewidth=0.2)
             if multiplicity:
                 axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(m.multiplicity),
                          bbox=dict(facecolor='white', alpha=1))
@@ -399,7 +409,9 @@ class LRSpline(object):
                     axs.add_patch(plp.Rectangle((m.u_min, m.v_min), w, h, fill=True, color='red', alpha=0.2))
                 else:
                     axs.add_patch(plp.Rectangle((m.u_min, m.v_min), w, h, fill=True, color='green', alpha=0.2))
-                axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(len(m.supported_b_splines)))
+                if text:
+                    axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(len(m.supported_b_splines)), ha='center',
+                             va='center')
         plt.title('dim(S) = {}'.format(len(self.S)))
         plt.show()
 

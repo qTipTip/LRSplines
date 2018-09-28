@@ -3,3 +3,4 @@ from LRSplines.b_spline import *
 from LRSplines.element import *
 from LRSplines.lr_spline import *
 from LRSplines.meshline import *
+from LRSplines.statistics import *

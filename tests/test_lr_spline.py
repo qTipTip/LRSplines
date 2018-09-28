@@ -1,5 +1,7 @@
 from collections import Counter
 
+import numpy as np
+
 from LRSplines.b_spline import BSpline
 from LRSplines.element import Element
 from LRSplines.lr_spline import init_tensor_product_LR_spline, LRSpline, _at_end
@@ -175,3 +177,20 @@ def test_lr_spline_dimension_bilinear():
     m = Meshline(1, 2, constant_value=0.5, axis=1)
     LR.insert_line(m)
     assert len(LR.S) == 7
+
+
+def test_lr_spline_global_knot_vector():
+    ku = [0, 0, 1, 2, 3, 3]
+    kv = [0, 0, 0.5, 1, 1]
+
+    du = 1
+    dv = 1
+
+    LR = init_tensor_product_LR_spline(du, dv, ku, kv)
+
+    np.testing.assert_array_almost_equal([0, 1, 2, 3], LR.global_knots_u)
+    np.testing.assert_array_almost_equal([0, 0.5, 1], LR.global_knots_v)
+
+    m = Meshline(start=0, stop=0.5, constant_value=1.5, axis=0)
+    LR.insert_line(m)
+    np.testing.assert_array_almost_equal([0, 1, 1.5, 2, 3], LR.global_knots_u)
