@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from LRSplines.aux_split_functions import split_single_basis_function
-from LRSplines.b_spline import BSpline
+from LRSplines.b_spline import BSpline, _find_knot_interval
 from LRSplines.element import Element
 from LRSplines.meshline import Meshline
 
@@ -91,6 +91,7 @@ class LRSpline(object):
         self.u_range = u_range
         self.v_range = v_range
         self.last_element = None
+        self._element_cache()
 
     def refine_by_element_full(self, e: Element) -> None:
         """
@@ -243,6 +244,9 @@ class LRSpline(object):
                 if basis.add_to_support_if_intersects(element):
                     element.add_supported_b_spline(basis)
 
+        # invalidate the element cache
+        self.element_cache = None
+
     def local_split(self, basis, m, functions_to_remove, new_functions):
         b1, b2 = split_single_basis_function(m, basis)
         if self.contains_basis_function(b1):
@@ -384,7 +388,8 @@ class LRSpline(object):
             self.meshlines.remove(old_meshline)
         return False, meshline
 
-    def visualize_mesh(self, multiplicity=True, overloading=True, text=True, relative=True) -> None:
+    def visualize_mesh(self, multiplicity=True, overloading=True, text=True, relative=True, filename=None,
+                       color=False) -> None:
         """
         Plots the LR-mesh.
         """
@@ -406,13 +411,20 @@ class LRSpline(object):
 
             if overloading:
                 if m.is_overloaded():
-                    axs.add_patch(plp.Rectangle((m.u_min, m.v_min), w, h, fill=True, color='red', alpha=0.2))
+                    axs.add_patch(plp.Rectangle((m.u_min, m.v_min), w, h, fill=True, color='red' if color else 'black',
+                                                alpha=0.2))
                 else:
-                    axs.add_patch(plp.Rectangle((m.u_min, m.v_min), w, h, fill=True, color='green', alpha=0.2))
+                    axs.add_patch(
+                        plp.Rectangle((m.u_min, m.v_min), w, h, fill=True, color='green' if color else 'white',
+                                      alpha=0.2))
                 if text:
                     axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(len(m.supported_b_splines)), ha='center',
                              va='center')
         plt.title('dim(S) = {}'.format(len(self.S)))
+
+        if filename:
+            plt.savefig(filename)
+
         plt.show()
 
     def refine(self, beta: float, error_function: typing.Callable, refinement_strategy='minimal') -> None:
@@ -493,3 +505,26 @@ class LRSpline(object):
             return True
         else:
             return False
+
+    def _element_cache(self):
+
+        cache = {}
+        for k, e in enumerate(self.M):
+            i0 = _find_knot_interval(e.u_min, self.global_knots_u, endpoint=False)
+            i1 = _find_knot_interval(e.u_max, self.global_knots_u, endpoint=False)
+            j0 = _find_knot_interval(e.v_min, self.global_knots_v, endpoint=False)
+            j1 = _find_knot_interval(e.v_max, self.global_knots_v, endpoint=False)
+            for i in range(i0, i1):
+                for j in range(j0, j1):
+                    cache[(i, j)] = e
+        self.element_cache = cache
+
+    def get_element_containing_point(self, u, v):
+
+        if self.element_cache is None:
+            self._element_cache()
+
+        i0 = _find_knot_interval(u, self.global_knots_u, endpoint=False)
+        j0 = _find_knot_interval(v, self.global_knots_v, endpoint=False)
+
+        return self.element_cache[(i0, j0)]
