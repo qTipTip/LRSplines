@@ -528,3 +528,15 @@ class LRSpline(object):
         j0 = _find_knot_interval(v, self.global_knots_v, endpoint=False)
 
         return self.element_cache[(i0, j0)]
+
+    def edge_functions(self):
+        """
+        Returns the indices of all B-splines corresponding to an edge-degree-of-freedom.
+        :return: np.ndarray
+        """
+
+        idx = []
+        for i in range(len(self.S)):
+            if S[i].is_edge_dof():
+                idx.append(i)
+        return np.array(idx, dtype=np.int)

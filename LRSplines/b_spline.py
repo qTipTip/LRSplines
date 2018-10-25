@@ -250,3 +250,6 @@ class BSpline(object):
         """
 
         return all([e.is_overloaded() for e in self.elements_of_support])
+
+    def is_edge_dof(self) -> bool:
+        return self.north or self.south or self.west or self.east
