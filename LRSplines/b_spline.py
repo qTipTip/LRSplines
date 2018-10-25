@@ -118,7 +118,7 @@ class BSpline(object):
     """
 
     def __init__(self, degree_u: int, degree_v: int, knots_u: Vector, knots_v: Vector, weight: float = 1, end_u=False,
-                 end_v=False) -> None:
+                 end_v=False, north=False, south=False, east=False, west=False) -> None:
         """
         Initialize a BSpline with bidegree (degree_u, degree_v) over associated knot vectors
         knots_u and knots_v
@@ -131,6 +131,10 @@ class BSpline(object):
         :param knots_v:  knot_vector in v_direction
         :param weight: B-spline weight
         """
+        self.west = west
+        self.east = east
+        self.north = north
+        self.south = south
         self.degree_u = degree_u
         self.degree_v = degree_v
         self.knots_u = np.array(knots_u, dtype=np.float64)
