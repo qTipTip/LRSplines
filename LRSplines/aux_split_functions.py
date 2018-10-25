@@ -78,10 +78,6 @@ def _split(alpha_1: float, alpha_2: float, b: BSpline, m: Meshline, new_knots: n
             b1.end_v = False
             b2.end_v = True
 
-        if b.end_u:
-            b1.end_u = False
-            b2.end_u = True
-
         if b.north:
             b2.north = True
         if b.south:
