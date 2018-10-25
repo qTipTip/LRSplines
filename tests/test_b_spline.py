@@ -161,5 +161,8 @@ def test_cached_univariate():
     assert B._univariate_v(1) == 1
 
 
-def test_univariate():
-    lr = init_tensor_product_LR_spline(1, 1, [0, 0, 1, 2, 2], [0, 0, 1, 1])
+def test_univariate_edge_single():
+    lr = init_tensor_product_LR_spline(1, 1, [0, 1, 2], [0, 1, 2])
+    b = lr.S[0]
+
+    assert b.north and b.south and b.east and b.west

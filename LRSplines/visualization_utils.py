@@ -17,10 +17,11 @@ def plot_basis_function(LR, basis_function):
 
     for i in range(N):
         for j in range(N):
-            z[i, j] = basis_function(y[j], x[i])
+            z[i, j] = basis_function(x[i], y[j])
     axs.set_zlim3d(0, 1)
     axs.plot_surface(X, Y, z)
     plt.show()
+
 
 def plot_basis_support(LR, basis_function, axis=False, hatch='//'):
     fig = plt.figure()

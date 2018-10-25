@@ -43,7 +43,12 @@ def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> '
         for j in range(len(kv) - d2 - 1):
             end_u = _at_end(ku, i + d1 + 1)
             end_v = _at_end(kv, j + d2 + 1)
-            basis.append(BSpline(d1, d2, ku[i: i + d1 + 2], kv[j: j + d2 + 2], end_u=end_u, end_v=end_v))
+            north = j == len(kv) - d2 - 2
+            south = j == 0
+            east = i == len(ku) - d1 - 2
+            west = i == 0
+            basis.append(BSpline(d1, d2, ku[i: i + d1 + 2], kv[j: j + d2 + 2], end_u=end_u, end_v=end_v, north=north,
+                                 south=south, east=east, west=west))
 
     for b in basis:
         for e in elements:
@@ -389,7 +394,7 @@ class LRSpline(object):
         return False, meshline
 
     def visualize_mesh(self, multiplicity=True, overloading=True, text=True, relative=True, filename=None,
-                       color=False) -> None:
+                       color=False, title=True, axes=False) -> None:
         """
         Plots the LR-mesh.
         """
@@ -399,12 +404,12 @@ class LRSpline(object):
             x = (m.start, m.stop)
             y = (m.constant_value, m.constant_value)
             if m.axis == 0:
-                axs.plot(y, x, color='black', linewidth=0.2)
+                axs.plot(y, x, color='black', linewidth=0.5)
             else:
-                axs.plot(x, y, color='black', linewidth=0.2)
+                axs.plot(x, y, color='black', linewidth=0.5)
             if multiplicity:
                 axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(m.multiplicity),
-                         bbox=dict(facecolor='white', alpha=1))
+                         bbox=dict(facecolor='white', alpha=1), ha='center', va='center')
         for m in self.M:
             w = m.u_max - m.u_min
             h = m.v_max - m.v_min
@@ -420,7 +425,11 @@ class LRSpline(object):
                 if text:
                     axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(len(m.supported_b_splines)), ha='center',
                              va='center')
-        plt.title('dim(S) = {}'.format(len(self.S)))
+        if title:
+            plt.title('dim(S) = {}'.format(len(self.S)))
+
+        if not axes:
+            plt.axis('off')
 
         if filename:
             plt.savefig(filename)
