@@ -194,3 +194,7 @@ def test_lr_spline_global_knot_vector():
     m = Meshline(start=0, stop=0.5, constant_value=1.5, axis=0)
     LR.insert_line(m)
     np.testing.assert_array_almost_equal([0, 1, 1.5, 2, 3], LR.global_knots_u)
+
+
+def test_lr_spline_edge_functions():
+    pass

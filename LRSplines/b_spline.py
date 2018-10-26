@@ -25,7 +25,7 @@ def memoize(f):
     return MemoClass(f)
 
 
-@memoize
+# @memoize
 def _evaluate_univariate_b_spline(x: float, knots: typing.Union[Vector, np.ndarray], degree: int,
                                   endpoint=False) -> float:
     """
@@ -106,6 +106,7 @@ def cached_univariate(degree: int, knots: typing.Union[typing.List[float], np.nd
     :return: cached univariate evaluation.
     """
 
+    @np.vectorize
     def cached_evaluation(x):
         return _evaluate_univariate_b_spline(x, knots, degree, endpoint=endpoint)
 
@@ -148,6 +149,8 @@ class BSpline(object):
         # for cached calls
         self._univariate_u = cached_univariate(degree_u, knots_u, endpoint=end_u)
         self._univariate_v = cached_univariate(degree_v, knots_v, endpoint=end_v)
+
+        self.id = None
 
     def __call__(self, u: float, v: float) -> float:
         """

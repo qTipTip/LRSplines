@@ -43,10 +43,14 @@ def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> '
         for j in range(len(kv) - d2 - 1):
             end_u = _at_end(ku, i + d1 + 1)
             end_v = _at_end(kv, j + d2 + 1)
+
+            # TODO: This only works if the knot vectors are p+1-extended.
+
             north = j == len(kv) - d2 - 2
             south = j == 0
             east = i == len(ku) - d1 - 2
             west = i == 0
+
             basis.append(BSpline(d1, d2, ku[i: i + d1 + 2], kv[j: j + d2 + 2], end_u=end_u, end_v=end_v, north=north,
                                  south=south, east=east, west=west))
 
@@ -97,6 +101,7 @@ class LRSpline(object):
         self.v_range = v_range
         self.last_element = None
         self._element_cache()
+        self.update_global_indices()
 
     def refine_by_element_full(self, e: Element) -> None:
         """
@@ -251,6 +256,7 @@ class LRSpline(object):
 
         # invalidate the element cache
         self.element_cache = None
+        self.update_global_indices()
 
     def local_split(self, basis, m, functions_to_remove, new_functions):
         b1, b2 = split_single_basis_function(m, basis)
@@ -546,6 +552,10 @@ class LRSpline(object):
 
         idx = []
         for i in range(len(self.S)):
-            if S[i].is_edge_dof():
+            if self.S[i].is_edge_dof():
                 idx.append(i)
         return np.array(idx, dtype=np.int)
+
+    def update_global_indices(self):
+        for i, b in enumerate(self.S):
+            b.id = i
