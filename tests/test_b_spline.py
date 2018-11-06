@@ -208,3 +208,25 @@ def test_univariate_derivative_quadratic():
     expected_derivative = [d_exact(X) for X in x]
 
     np.testing.assert_allclose(computed_derivative, expected_derivative)
+
+
+def test_bivariate_derivative_mixed_deriv():
+    k = [0, 0, 0, 1]
+    d = 2
+    x = np.linspace(0, 1, 20)
+    y = np.linspace(0, 1, 20)
+
+    b = BSpline(d, d, k, k, end_u=True, end_v=True)
+
+    def d_exact(x, y):
+        res = 1
+        if 0 <= x <= 1:
+            res *= -2 * (1 - x)
+        if 0 <= y <= 1:
+            res *= -2 * (1 - y)
+        return res
+
+    computed_derivative = [b(X, Y, r1=1, r2=1) for X in x for Y in y]
+    expected_derivative = [d_exact(X, Y) for X in x for Y in y]
+
+    np.testing.assert_allclose(computed_derivative, expected_derivative)

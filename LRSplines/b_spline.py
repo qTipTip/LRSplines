@@ -155,7 +155,7 @@ class BSpline(object):
 
         self.id = None
 
-    def __call__(self, u: float, v: float) -> float:
+    def __call__(self, u: float, v: float, r1=0, r2=0) -> float:
         """
         Evaluates the BSpline at the parametric point (u, v).
 
@@ -165,10 +165,11 @@ class BSpline(object):
         """
 
         return self.weight * _evaluate_univariate_b_spline(u, self.knots_u, self.degree_u,
-                                                           self.end_u) * _evaluate_univariate_b_spline(v,
-                                                                                                       self.knots_v,
-                                                                                                       self.degree_v,
-                                                                                                       self.end_v)
+                                                           self.end_u, r1) * _evaluate_univariate_b_spline(v,
+                                                                                                           self.knots_v,
+                                                                                                           self.degree_v,
+                                                                                                           self.end_v,
+                                                                                                           r2)
 
     def add_to_support_if_intersects(self, element: "Element") -> bool:
         """
