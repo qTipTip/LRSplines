@@ -193,3 +193,16 @@ class Element(object):
     # Element.split method.
     def __hash__(self):
         return hash(tuple([self.u_min, self.u_max, self.v_min, self.v_max]))
+
+    def evaluate_basis(self, u, v):
+        """
+        Evaluates all the supported B-splines at the point u, v
+        :param u:
+        :param v:
+        :return:
+        """
+
+        values = np.zeros(len(self.supported_b_splines))
+        for i, b in enumerate(self.supported_b_splines):
+            values[i] = b(u, v)
+        return values

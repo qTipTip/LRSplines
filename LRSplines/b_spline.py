@@ -1,4 +1,5 @@
 import typing
+from math import factorial
 
 import numpy as np
 
@@ -15,19 +16,19 @@ def memoize(f):
             self.f = f
             self.cache = {}
 
-        def __call__(self, x, knots, degree, endpoint=False):
+        def __call__(self, x, knots, degree, endpoint=False, r=0):
             knots = np.array(knots)
-            key = '{} {} {}'.format(x, degree, endpoint) + str(knots.tostring())
+            key = '{} {} {} {}'.format(x, degree, endpoint, r) + str(knots.tostring())
             if key not in self.cache:
-                self.cache[key] = f(x, knots, degree, endpoint)
+                self.cache[key] = f(x, knots, degree, endpoint, r)
             return self.cache[key]
 
     return MemoClass(f)
 
 
-# @memoize
+@memoize
 def _evaluate_univariate_b_spline(x: float, knots: typing.Union[Vector, np.ndarray], degree: int,
-                                  endpoint=False) -> float:
+                                  endpoint=False, r=0) -> float:
     """
     Evaluates a univariate BSpline corresponding to the given knot vector and polynomial degree at the point x.
 
@@ -35,6 +36,7 @@ def _evaluate_univariate_b_spline(x: float, knots: typing.Union[Vector, np.ndarr
     :param x: point of evaluation
     :param knots: knot vector
     :param degree: polynomial degree
+    :param r: derivative
     :return: B(x)
     """
     knots = np.array(knots)
@@ -48,7 +50,13 @@ def _evaluate_univariate_b_spline(x: float, knots: typing.Union[Vector, np.ndarr
     c[degree + 1] = 1
     c = c[i - degree: i + 1]
 
-    for k in range(degree, 0, -1):
+    for k in range(degree, degree - r, -1):
+        t1 = t[i - k + 1: i + 1]
+        t2 = t[i + 1: i + k + 1]
+
+        c = np.divide((c[1:] - c[:-1]), (t2 - t1), out=np.zeros_like(t1, dtype=np.float64), where=(t2 - t1) != 0)
+
+    for k in range(degree - r, 0, -1):
         t1 = t[i - k + 1: i + 1]
         t2 = t[i + 1: i + k + 1]
         omega = np.divide((x - t1), (t2 - t1), out=np.zeros_like(t1, dtype=np.float64), where=(t2 - t1) != 0)
@@ -57,7 +65,7 @@ def _evaluate_univariate_b_spline(x: float, knots: typing.Union[Vector, np.ndarr
         b = np.multiply(omega, c[1:])
         c = a + b
 
-    return c
+    return factorial(degree) * c.squeeze() / factorial(degree - r)
 
 
 def _augment_knots(knots: Vector, degree: int) -> np.ndarray:
@@ -106,7 +114,6 @@ def cached_univariate(degree: int, knots: typing.Union[typing.List[float], np.nd
     :return: cached univariate evaluation.
     """
 
-    @np.vectorize
     def cached_evaluation(x):
         return _evaluate_univariate_b_spline(x, knots, degree, endpoint=endpoint)
 
@@ -146,10 +153,6 @@ class BSpline(object):
         self.end_v = end_v
         self.elements_of_support: ElementVector = []
 
-        # for cached calls
-        self._univariate_u = cached_univariate(degree_u, knots_u, endpoint=end_u)
-        self._univariate_v = cached_univariate(degree_v, knots_v, endpoint=end_v)
-
         self.id = None
 
     def __call__(self, u: float, v: float) -> float:
@@ -161,7 +164,6 @@ class BSpline(object):
         :return: B(u, v)
         """
 
-        # return self.weight * self._univariate_u(u) * self._univariate_v(v)
         return self.weight * _evaluate_univariate_b_spline(u, self.knots_u, self.degree_u,
                                                            self.end_u) * _evaluate_univariate_b_spline(v,
                                                                                                        self.knots_v,

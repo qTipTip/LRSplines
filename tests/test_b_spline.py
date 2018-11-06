@@ -134,8 +134,6 @@ def test_endpoint_interpolation():
 
     assert B(0, 3) == 0
     assert B(0, 4) == 1
-    assert B._univariate_u(0) == 1
-    assert B._univariate_v(4) == 1
     assert B(1, 3) == 0
     assert B(1, 4) == 0
 
@@ -158,7 +156,6 @@ def test_endpoint_find_index():
 
 def test_cached_univariate():
     B = BSpline(2, 2, [0.75, 0.875, 1, 1], [0, 1, 1, 1], end_v=True)
-    assert B._univariate_v(1) == 1
 
 
 def test_edge_single():
@@ -175,3 +172,39 @@ def test_edge_double():
 
     assert b1.north and b1.south and b1.west and not b1.east
     assert b2.north and b2.south and b2.east and not b2.west
+
+
+def test_univariate_derivative():
+    k = [0, 1, 2]
+    d = 1
+
+    x = np.linspace(0, 2, 20)
+
+    def d_exact(x):
+        if 0 <= x < 1:
+            return 1
+        elif 1 <= x <= 2:
+            return -1
+        else:
+            return 0
+
+    computed_derivative = [_evaluate_univariate_b_spline(X, k, d, endpoint=True, r=1) for X in x]
+    expected_derivative = [d_exact(X) for X in x]
+
+    np.testing.assert_allclose(computed_derivative, expected_derivative)
+
+
+def test_univariate_derivative_quadratic():
+    k = [0, 0, 0, 1]
+    d = 2
+    x = np.linspace(0, 3, 20)
+
+    def d_exact(x):
+        if 0 <= x < 1:
+            return -2 * (1 - x)
+        return 0
+
+    computed_derivative = [_evaluate_univariate_b_spline(X, k, d, endpoint=True, r=1) for X in x]
+    expected_derivative = [d_exact(X) for X in x]
+
+    np.testing.assert_allclose(computed_derivative, expected_derivative)
