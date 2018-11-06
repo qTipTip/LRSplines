@@ -230,3 +230,20 @@ def test_bivariate_derivative_mixed_deriv():
     expected_derivative = [d_exact(X, Y) for X in x for Y in y]
 
     np.testing.assert_allclose(computed_derivative, expected_derivative)
+
+
+def test_bivariate_derivative_gradient():
+    k = [0, 0, 0, 1]
+    d = 2
+    x = np.linspace(0, 1, 20)
+    y = np.linspace(0, 1, 20)
+
+    b = BSpline(d, d, k, k, end_u=True, end_v=True)
+
+    def d_exact(x, y):
+        return np.array((-2 * (1 - x) * (1 - y) ** 2, -2 * (1 - x) ** 2 * (1 - y)))
+
+    computed_gradient = [b.grad(X, Y) for X in x for Y in y]
+    expected_gradient = [d_exact(X, Y) for X in x for Y in y]
+
+    np.testing.assert_allclose(computed_gradient, expected_gradient)

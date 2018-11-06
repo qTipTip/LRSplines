@@ -263,3 +263,6 @@ class BSpline(object):
 
     def is_edge_dof(self) -> bool:
         return self.north or self.south or self.west or self.east
+
+    def grad(self, X, Y):
+        return np.array([self.__call__(X, Y, r1=1, r2=0), self.__call__(X, Y, r1=0, r2=1)])
