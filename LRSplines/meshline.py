@@ -8,7 +8,7 @@ from LRSplines.element import Element
 
 def hierarchical_meshline_rectangle(min_u, min_v, max_u, max_v, step=0.5):
     """
-    Produces a uniform grid of meshlines over the given rectangle with given knot interval lenght.
+    Produces a uniform grid of meshlines over the given rectangle with given knot interval length.
     For use in quick sketching of hierarchichal meshes.
     :param min_u:
     :param min_v:
