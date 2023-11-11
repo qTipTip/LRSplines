@@ -14,7 +14,7 @@ def sigmoid(z):
     return 1.0 / (1.0 + np.exp(-z))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     k = np.array([-5] * 2 + list(np.linspace(-5, 5, 10)) + [5] * 2)
     d = 2
     LR = init_tensor_product_LR_spline(d, d, k, k)
@@ -25,5 +25,5 @@ if __name__ == '__main__':
     transformed_lines = sigmoid(affine(meshlines))
 
     for m in transformed_lines:
-        plt.plot(m[0], m[1], linewidth=1, color='black')
+        plt.plot(m[0], m[1], linewidth=1, color="black")
     plt.show()

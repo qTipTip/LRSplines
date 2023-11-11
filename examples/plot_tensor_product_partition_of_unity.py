@@ -32,7 +32,7 @@ for i in range(1):
     axs = Axes3D(fig)
 
     axs.plot_wireframe(X, Y, z)
-    axs.set_xlabel('u')
-    axs.set_ylabel('v')
+    axs.set_xlabel("u")
+    axs.set_ylabel("v")
 
     plt.show()

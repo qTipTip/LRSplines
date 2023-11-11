@@ -9,9 +9,10 @@ from LRSplines.b_spline import BSpline
 BasisFunctions = typing.List[BSpline]
 
 
-class Element(object):
-
-    def __init__(self, u_min: float, v_min: float, u_max: float, v_max: float, level: int = 0) -> None:
+class Element:
+    def __init__(
+        self, u_min: float, v_min: float, u_max: float, v_max: float, level: int = 0
+    ) -> None:
         """
         Initialize an Element (a rectangle) with lower left corner (u_min, v_min)
         and upper right corner (u_max, v_max)
@@ -93,7 +94,9 @@ class Element(object):
         :param b_splines: list of BSpline functions
         """
 
-        raise NotImplementedError('Updating of supported basis functions is not implemented yet')
+        raise NotImplementedError(
+            "Updating of supported basis functions is not implemented yet"
+        )
 
     def split(self, axis: int, split_value: float) -> "Element":
         """
@@ -107,14 +110,18 @@ class Element(object):
         if axis == 0:  # vertical split
             if not self.u_min < split_value < self.u_max:
                 return None
-            new_element = Element(split_value, self.v_min, self.u_max, self.v_max, level=self.level + 1)
+            new_element = Element(
+                split_value, self.v_min, self.u_max, self.v_max, level=self.level + 1
+            )
             self.level += 1
             self.u_max = split_value
 
         elif axis == 1:  # horizontal split
             if not self.v_min < split_value < self.v_max:
                 return None
-            new_element = Element(self.u_min, split_value, self.u_max, self.v_max, level=self.level + 1)
+            new_element = Element(
+                self.u_min, split_value, self.u_max, self.v_max, level=self.level + 1
+            )
             self.level += 1
             self.v_max = split_value
 
@@ -137,7 +144,9 @@ class Element(object):
 
         :return: midpoint of the element
         """
-        return (self.u_max - self.u_min) * 0.5 + self.u_min, (self.v_max - self.v_min) * 0.5 + self.v_min
+        return (self.u_max - self.u_min) * 0.5 + self.u_min, (
+            self.v_max - self.v_min
+        ) * 0.5 + self.v_min
 
     @property
     def area(self) -> float:
@@ -148,7 +157,7 @@ class Element(object):
         """
         return (self.u_max - self.u_min) * (self.v_max - self.v_min)
 
-    def intersects(self, other: 'Element') -> bool:
+    def intersects(self, other: "Element") -> bool:
         """
         Returns true if this element intersects the other element with *positive* area.
 
@@ -163,7 +172,7 @@ class Element(object):
         else:
             return True
 
-    def __eq__(self, other: 'Element') -> bool:
+    def __eq__(self, other: "Element") -> bool:
         """
         Checks whether the two elements are equal within a tolerance.
 
@@ -172,11 +181,15 @@ class Element(object):
         """
 
         tol = 1.0e-14
-        return abs(self.u_min - other.u_min) < tol and abs(self.u_max - other.u_max) < tol and abs(
-            self.v_min - other.v_min) < tol and abs(self.v_max - other.v_max) < tol
+        return (
+            abs(self.u_min - other.u_min) < tol
+            and abs(self.u_max - other.u_max) < tol
+            and abs(self.v_min - other.v_min) < tol
+            and abs(self.v_max - other.v_max) < tol
+        )
 
     def __repr__(self):
-        return "Element({}, {}, {}, {})".format(self.u_min, self.v_min, self.u_max, self.v_max)
+        return f"Element({self.u_min}, {self.v_min}, {self.u_max}, {self.v_max})"
 
     def is_overloaded(self) -> bool:
         """

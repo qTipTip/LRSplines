@@ -10,14 +10,16 @@ from LRSplines.b_spline import BSpline, _find_knot_interval
 from LRSplines.element import Element
 from LRSplines.meshline import Meshline
 
-Vector = typing.Union[typing.List['float'], np.ndarray]
+Vector = typing.Union[typing.List["float"], np.ndarray]
 
 
 def _at_end(knots, index):
-    return abs(knots[-1] - knots[index]) < 1.0E-14
+    return abs(knots[-1] - knots[index]) < 1.0e-14
 
 
-def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> 'LRSpline':
+def init_tensor_product_LR_spline(
+    d1: int, d2: int, ku: Vector, kv: Vector
+) -> "LRSpline":
     """
     Initializes an LR spline at the tensor product level of bidegree (d1, d2).
 
@@ -37,7 +39,9 @@ def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> '
 
     for i in range(len(unique_ku) - 1):
         for j in range(len(unique_kv) - 1):
-            elements.append(Element(unique_ku[i], unique_kv[j], unique_ku[i + 1], unique_kv[j + 1]))
+            elements.append(
+                Element(unique_ku[i], unique_kv[j], unique_ku[i + 1], unique_kv[j + 1])
+            )
 
     for i in range(len(ku) - d1 - 1):
         for j in range(len(kv) - d2 - 1):
@@ -51,8 +55,20 @@ def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> '
             east = i == len(ku) - d1 - 2
             west = i == 0
 
-            basis.append(BSpline(d1, d2, ku[i: i + d1 + 2], kv[j: j + d2 + 2], end_u=end_u, end_v=end_v, north=north,
-                                 south=south, east=east, west=west))
+            basis.append(
+                BSpline(
+                    d1,
+                    d2,
+                    ku[i : i + d1 + 2],
+                    kv[j : j + d2 + 2],
+                    end_u=end_u,
+                    end_v=end_v,
+                    north=north,
+                    south=south,
+                    east=east,
+                    west=west,
+                )
+            )
 
     for b in basis:
         for e in elements:
@@ -61,12 +77,22 @@ def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> '
 
     for i in range(len(unique_ku)):
         for j in range(len(unique_kv) - 1):
-            new_m = Meshline(start=unique_kv[j], stop=unique_kv[j + 1], constant_value=unique_ku[i], axis=0)
+            new_m = Meshline(
+                start=unique_kv[j],
+                stop=unique_kv[j + 1],
+                constant_value=unique_ku[i],
+                axis=0,
+            )
             new_m.set_multiplicity(ku)
             meshlines.append(new_m)
     for i in range(len(unique_kv)):
         for j in range(len(unique_ku) - 1):
-            new_m = Meshline(start=unique_ku[j], stop=unique_ku[j + 1], constant_value=unique_kv[i], axis=1)
+            new_m = Meshline(
+                start=unique_ku[j],
+                stop=unique_ku[j + 1],
+                constant_value=unique_kv[i],
+                axis=1,
+            )
             new_m.set_multiplicity(kv)
             meshlines.append(new_m)
 
@@ -76,14 +102,22 @@ def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> '
     return LRSpline(elements, basis, meshlines, u_range, v_range, unique_ku, unique_kv)
 
 
-class LRSpline(object):
+class LRSpline:
     """
     Represents a LRSpline, which is a tuple (M, S), where M is a mesh and S is a set of basis functions
     defined on M.
     """
 
-    def __init__(self, mesh: List['Element'], basis: List['BSpline'], meshlines: List['Meshline'], u_range=None,
-                 v_range=None, unique_global_knots_u=None, unique_global_knots_v=None) -> None:
+    def __init__(
+        self,
+        mesh: List["Element"],
+        basis: List["BSpline"],
+        meshlines: List["Meshline"],
+        u_range=None,
+        v_range=None,
+        unique_global_knots_u=None,
+        unique_global_knots_v=None,
+    ) -> None:
         """
         Initialize an LR Spline with associated set of elements, and set of basis functions.
 
@@ -110,7 +144,9 @@ class LRSpline(object):
 
         :param e: element to refine
         """
-        raise NotImplementedError('LRSpline.{} is not implemented yet'.format(self.refine_by_element_full.__name__))
+        raise NotImplementedError(
+            f"LRSpline.{self.refine_by_element_full.__name__} is not implemented yet"
+        )
 
     def refine_by_element_minimal(self, e: Element) -> None:
         """
@@ -139,7 +175,11 @@ class LRSpline(object):
         for basis in e.supported_b_splines:
             k = basis.knots_v if axis == 0 else basis.knots_u
             current_length = abs(k[-1] - k[0])
-            if smallest_start is None or smallest_stop is None or current_length < (smallest_stop - smallest_start):
+            if (
+                smallest_start is None
+                or smallest_stop is None
+                or current_length < (smallest_stop - smallest_start)
+            ):
                 smallest_start = k[0]
                 smallest_stop = k[-1]
 
@@ -161,7 +201,11 @@ class LRSpline(object):
         for basis in e.supported_b_splines:
             k = basis.knots_v if axis == 0 else basis.knots_u
             current_length = abs(k[-1] - k[0])
-            if longest_start is None or longest_stop is None or current_length > (longest_stop - longest_start):
+            if (
+                longest_start is None
+                or longest_stop is None
+                or current_length > (longest_stop - longest_start)
+            ):
                 longest_start = k[0]
                 longest_stop = k[-1]
         constant_value = e.midpoint[axis]
@@ -198,11 +242,15 @@ class LRSpline(object):
 
         # update the list of global tensorproduct knots
         if meshline.axis == 0:
-            i = np.searchsorted(self.global_knots_u, meshline.constant_value, 'left')
-            self.global_knots_u = np.insert(self.global_knots_u, i, meshline.constant_value)
+            i = np.searchsorted(self.global_knots_u, meshline.constant_value, "left")
+            self.global_knots_u = np.insert(
+                self.global_knots_u, i, meshline.constant_value
+            )
         elif meshline.axis == 1:
-            i = np.searchsorted(self.global_knots_v, meshline.constant_value, 'left')
-            self.global_knots_v = np.insert(self.global_knots_v, i, meshline.constant_value)
+            i = np.searchsorted(self.global_knots_v, meshline.constant_value, "left")
+            self.global_knots_v = np.insert(
+                self.global_knots_v, i, meshline.constant_value
+            )
 
         # step 1
         # split B-splines against new meshline
@@ -211,7 +259,9 @@ class LRSpline(object):
         for basis in self.S:
             if meshline.splits_basis(basis):
                 if meshline.number_of_knots_contained(basis) < meshline.multiplicity:
-                    self.local_split(basis, meshline, functions_to_remove, new_functions)
+                    self.local_split(
+                        basis, meshline, functions_to_remove, new_functions
+                    )
 
         purged_S = [s for s in self.S if s not in functions_to_remove]
 
@@ -238,7 +288,11 @@ class LRSpline(object):
         new_elements = []
         for element in self.M:
             if meshline.splits_element(element):
-                new_elements.append(element.split(axis=meshline.axis, split_value=meshline.constant_value))
+                new_elements.append(
+                    element.split(
+                        axis=meshline.axis, split_value=meshline.constant_value
+                    )
+                )
 
         self.M += new_elements
 
@@ -300,7 +354,7 @@ class LRSpline(object):
 
         return False
 
-    def contains_element(self, element: 'Element') -> bool:
+    def contains_element(self, element: "Element") -> bool:
         """
         Returns true if element is found in self.M
 
@@ -336,7 +390,7 @@ class LRSpline(object):
             if e.contains(u, v):
                 break
         else:
-            raise ValueError('({}, {}) is not in the domain'.format(u, v))
+            raise ValueError(f"({u}, {v}) is not in the domain")
         self.last_element = e
         return e
 
@@ -368,7 +422,10 @@ class LRSpline(object):
                 # meshline is completely contained in the old meshline
 
                 if meshline.multiplicity > old_meshline.multiplicity:
-                    if abs(old_meshline.start - meshline.start) < tol and abs(old_meshline.stop - meshline.stop) < tol:
+                    if (
+                        abs(old_meshline.start - meshline.start) < tol
+                        and abs(old_meshline.stop - meshline.stop) < tol
+                    ):
                         # if the new multiplicity is greater than the old one, and the endpoints coincide, keep the
                         # new line and remove the old line.
                         meshlines_to_remove.append(old_meshline)
@@ -399,8 +456,17 @@ class LRSpline(object):
             self.meshlines.remove(old_meshline)
         return False, meshline
 
-    def visualize_mesh(self, multiplicity=True, overloading=True, text=True, relative=True, filename=None,
-                       color=False, title=True, axes=False) -> None:
+    def visualize_mesh(
+        self,
+        multiplicity=True,
+        overloading=True,
+        text=True,
+        relative=True,
+        filename=None,
+        color=False,
+        title=True,
+        axes=False,
+    ) -> None:
         """
         Plots the LR-mesh.
         """
@@ -410,39 +476,70 @@ class LRSpline(object):
             x = (m.start, m.stop)
             y = (m.constant_value, m.constant_value)
             if m.axis == 0:
-                axs.plot(y, x, color='black', linewidth=0.5)
+                axs.plot(y, x, color="black", linewidth=0.5)
             else:
-                axs.plot(x, y, color='black', linewidth=0.5)
+                axs.plot(x, y, color="black", linewidth=0.5)
             if multiplicity:
-                axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(m.multiplicity),
-                         bbox=dict(facecolor='white', alpha=1), ha='center', va='center')
+                axs.text(
+                    m.midpoint[0],
+                    m.midpoint[1],
+                    f"{m.multiplicity}",
+                    bbox=dict(facecolor="white", alpha=1),
+                    ha="center",
+                    va="center",
+                )
         for m in self.M:
             w = m.u_max - m.u_min
             h = m.v_max - m.v_min
 
             if overloading:
                 if m.is_overloaded():
-                    axs.add_patch(plp.Rectangle((m.u_min, m.v_min), w, h, fill=True, color='red' if color else 'black',
-                                                alpha=0.2))
+                    axs.add_patch(
+                        plp.Rectangle(
+                            (m.u_min, m.v_min),
+                            w,
+                            h,
+                            fill=True,
+                            color="red" if color else "black",
+                            alpha=0.2,
+                        )
+                    )
                 else:
                     axs.add_patch(
-                        plp.Rectangle((m.u_min, m.v_min), w, h, fill=True, color='green' if color else 'white',
-                                      alpha=0.2))
+                        plp.Rectangle(
+                            (m.u_min, m.v_min),
+                            w,
+                            h,
+                            fill=True,
+                            color="green" if color else "white",
+                            alpha=0.2,
+                        )
+                    )
                 if text:
-                    axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(len(m.supported_b_splines)), ha='center',
-                             va='center')
+                    axs.text(
+                        m.midpoint[0],
+                        m.midpoint[1],
+                        f"{len(m.supported_b_splines)}",
+                        ha="center",
+                        va="center",
+                    )
         if title:
-            plt.title('dim(S) = {}'.format(len(self.S)))
+            plt.title(f"dim(S) = {len(self.S)}")
 
         if not axes:
-            plt.axis('off')
+            plt.axis("off")
 
         if filename:
             plt.savefig(filename)
 
         plt.show()
 
-    def refine(self, beta: float, error_function: typing.Callable, refinement_strategy='minimal') -> None:
+    def refine(
+        self,
+        beta: float,
+        error_function: typing.Callable,
+        refinement_strategy="minimal",
+    ) -> None:
         """
         Refine the LR-mesh in order to introduce beta * dim(S) new degrees of freedom.
         The error function takes an element and returns the elemental error contribution.
@@ -457,12 +554,18 @@ class LRSpline(object):
         while len(self.S) <= previous_dim * (1 + beta):
             element_to_refine = max(self.M, key=error_function)
 
-            if refinement_strategy is 'minimal':
-                m = self.get_minimal_span_meshline(element_to_refine, axis=number_of_inserted_lines % 2)
-            elif refinement_strategy is 'full':
-                m = self.get_full_span_meshline(element_to_refine, axis=number_of_inserted_lines % 2)
+            if refinement_strategy == "minimal":
+                m = self.get_minimal_span_meshline(
+                    element_to_refine, axis=number_of_inserted_lines % 2
+                )
+            elif refinement_strategy == "full":
+                m = self.get_full_span_meshline(
+                    element_to_refine, axis=number_of_inserted_lines % 2
+                )
             else:
-                raise NotImplemented('The requested refinement strategy is not implemented yet')
+                raise NotImplementedError(
+                    "The requested refinement strategy is not implemented yet"
+                )
             self.insert_line(m)
             number_of_inserted_lines += 1
 
@@ -522,7 +625,6 @@ class LRSpline(object):
             return False
 
     def _element_cache(self):
-
         cache = {}
         for k, e in enumerate(self.M):
             i0 = _find_knot_interval(e.u_min, self.global_knots_u, endpoint=False)
@@ -535,7 +637,6 @@ class LRSpline(object):
         self.element_cache = cache
 
     def get_element_containing_point(self, u, v):
-
         if self.element_cache is None:
             self._element_cache()
 
@@ -554,7 +655,7 @@ class LRSpline(object):
         for i in range(len(self.S)):
             if self.S[i].is_edge_dof():
                 idx.append(i)
-        return np.array(idx, dtype=np.int)
+        return np.array(idx, dtype=int)
 
     def update_global_indices(self):
         for i, b in enumerate(self.S):

@@ -1,11 +1,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from LRSplines import init_tensor_product_LR_spline, BSpline
+from LRSplines import BSpline, init_tensor_product_LR_spline
 
 
 def plot_lr(b: BSpline):
     from mpl_toolkits.mplot3d import Axes3D
+
     fig = plt.figure()
     axs = Axes3D(fig)
 
@@ -20,7 +21,7 @@ def plot_lr(b: BSpline):
 
     X, Y = np.meshgrid(x, y)
     axs.plot_surface(X, Y, z)
-    plt.title(';'.join((np.array2string(b.knots_u), (np.array2string(b.knots_v)))))
+    plt.title(";".join((np.array2string(b.knots_u), (np.array2string(b.knots_v)))))
     plt.show()
 
 

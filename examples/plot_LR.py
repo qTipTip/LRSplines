@@ -1,11 +1,7 @@
-import random
-from timeit import default_timer as timer
-
 import matplotlib.patches as plp
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
-import scipy.integrate as integrate
+from mpl_toolkits.mplot3d import Axes3D
 
 from LRSplines.lr_spline import init_tensor_product_LR_spline
 
@@ -24,24 +20,37 @@ def visualize_mesh(LR) -> None:
         x = (m.start, m.stop)
         y = (m.constant_value, m.constant_value)
         if m.axis == 0:
-            axs.plot(y, x, color='black')
+            axs.plot(y, x, color="black")
         else:
-            axs.plot(x, y, color='black')
-        axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(m.multiplicity), bbox=dict(facecolor='white', alpha=1))
+            axs.plot(x, y, color="black")
+        axs.text(
+            m.midpoint[0],
+            m.midpoint[1],
+            f"{m.multiplicity}",
+            bbox=dict(facecolor="white", alpha=1),
+        )
     for m in LR.M:
         w = m.u_max - m.u_min
         h = m.v_max - m.v_min
 
         if m.is_overloaded():
-            axs.add_patch(plp.Rectangle((m.u_min, m.v_min), w, h, fill=True, color='red', alpha=0.2))
+            axs.add_patch(
+                plp.Rectangle(
+                    (m.u_min, m.v_min), w, h, fill=True, color="red", alpha=0.2
+                )
+            )
         else:
-            axs.add_patch(plp.Rectangle((m.u_min, m.v_min), w, h, fill=True, color='green', alpha=0.2))
+            axs.add_patch(
+                plp.Rectangle(
+                    (m.u_min, m.v_min), w, h, fill=True, color="green", alpha=0.2
+                )
+            )
 
-        axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(len(m.supported_b_splines)))
-    plt.title('dim(S) = {}'.format(len(LR.S)))
+        axs.text(m.midpoint[0], m.midpoint[1], f"{len(m.supported_b_splines)}")
+    plt.title(f"dim(S) = {len(LR.S)}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     for N in [2, 4, 6, 8]:
         d1, d2 = 2, 2
         ku = [0, 0, 0, 0.5, 0.75, 1, 1, 1]
@@ -62,6 +71,6 @@ if __name__ == '__main__':
 
         fig = plt.figure()
         axs1 = Axes3D(fig)
-        axs1.plot_wireframe(X, Y, z, label='LR')
+        axs1.plot_wireframe(X, Y, z, label="LR")
         plt.legend()
         plt.show()

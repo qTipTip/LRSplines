@@ -12,8 +12,10 @@ def circle(t):
     return 2.5 * np.cos(t) + 3, 2.5 * np.sin(t) + 3
 
 
-if __name__ == '__main__':
-    LR = init_tensor_product_LR_spline(1, 1, [0, 0, 1, 2, 3, 4, 5, 6, 6], [0, 0, 1, 2, 3, 4, 5, 6, 6])
+if __name__ == "__main__":
+    LR = init_tensor_product_LR_spline(
+        1, 1, [0, 0, 1, 2, 3, 4, 5, 6, 6], [0, 0, 1, 2, 3, 4, 5, 6, 6]
+    )
 
     LR.visualize_mesh(False, False)
     # LR.refine(beta=0.5, error_function=element_contribution, refinement_strategy='full')

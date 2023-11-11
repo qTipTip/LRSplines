@@ -1,13 +1,13 @@
 import matplotlib.patches as plp
 import matplotlib.pyplot as plt
 
-from LRSplines import init_tensor_product_LR_spline, Meshline, np
+from LRSplines import Meshline, init_tensor_product_LR_spline, np
 
 
 def plot_basis_function(LR, basis_function):
     N = 30
     fig = plt.figure()
-    axs = fig.add_subplot(1, 1, 1, projection='3d')
+    axs = fig.add_subplot(1, 1, 1, projection="3d")
 
     x = np.linspace(LR.u_range[0], LR.u_range[1], N)
     y = np.linspace(LR.v_range[0], LR.v_range[1], N)
@@ -23,7 +23,7 @@ def plot_basis_function(LR, basis_function):
     plt.show()
 
 
-def plot_basis_support(LR, basis_function, axis=False, hatch='//'):
+def plot_basis_support(LR, basis_function, axis=False, hatch="//"):
     fig = plt.figure()
     axs = fig.add_subplot(1, 1, 1)
     for meshline in LR.meshlines:
@@ -31,28 +31,32 @@ def plot_basis_support(LR, basis_function, axis=False, hatch='//'):
         y = meshline.constant_value, meshline.constant_value
 
         if meshline.axis == 0:
-            axs.plot(y, x, c='black')
+            axs.plot(y, x, c="black")
         else:
-            axs.plot(x, y, c='black')
+            axs.plot(x, y, c="black")
 
         xy = basis_function.knots_u[0], basis_function.knots_v[0]
         w = basis_function.knots_u[-1] - basis_function.knots_u[0]
         h = basis_function.knots_v[-1] - basis_function.knots_v[0]
 
         if basis_function.end_v or basis_function.end_u:
-            c = 'red'
+            c = "red"
         else:
-            c = 'green'
-        basis_patch = plp.Rectangle(xy, w, h, hatch=hatch, fill=True, linewidth=0.2, color=c)
+            c = "green"
+        basis_patch = plp.Rectangle(
+            xy, w, h, hatch=hatch, fill=True, linewidth=0.2, color=c
+        )
 
         axs.add_patch(basis_patch)
     if not axis:
-        plt.axis('off')
+        plt.axis("off")
     plt.show()
 
 
-if __name__ == '__main__':
-    LR = init_tensor_product_LR_spline(2, 2, [0, 0, 0, 1, 2, 3, 3, 3], [0, 0, 0, 1, 2, 3, 3, 3])
+if __name__ == "__main__":
+    LR = init_tensor_product_LR_spline(
+        2, 2, [0, 0, 0, 1, 2, 3, 3, 3], [0, 0, 0, 1, 2, 3, 3, 3]
+    )
     m1 = Meshline(start=0, stop=2, constant_value=1.5, axis=0)
     m2 = Meshline(start=1, stop=3, constant_value=1.5, axis=1)
 

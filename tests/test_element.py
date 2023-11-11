@@ -1,11 +1,17 @@
-from LRSplines.lr_spline import init_tensor_product_LR_spline
 from LRSplines.element import Element
+from LRSplines.lr_spline import init_tensor_product_LR_spline
 
 
 def test_element_init():
     e = Element(0, 0, 1, 1)
 
-    assert e.u_min == 0 and e.u_max == 1 and e.v_min == 0 and e.v_max == 1 and e.supported_b_splines == []
+    assert (
+        e.u_min == 0
+        and e.u_max == 1
+        and e.v_min == 0
+        and e.v_max == 1
+        and e.supported_b_splines == []
+    )
 
 
 def test_element_containment():
@@ -68,7 +74,7 @@ def test_element_intersects():
     assert e1.intersects(e3) and e3.intersects(e1)
     assert not e1.intersects(e4)
 
-    e5 = e1.split(axis=0, split_value=.5)
+    e5 = e1.split(axis=0, split_value=0.5)
     assert not e1.intersects(e5)
 
 
