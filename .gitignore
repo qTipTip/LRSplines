@@ -1,0 +1,5 @@
+.tool-versions
+.pytest_cache
+.idea
+**/__pycache__/*
+*.egg-info
