@@ -6,7 +6,9 @@ from LRSplines.lr_spline import init_tensor_product_LR_spline
 
 @pytest.mark.parametrize("N", [2, 4, 6, 8])
 def test_lr_spline_partition_of_unity_interior(N):
-    LR = init_tensor_product_LR_spline(2, 2, [0, 0, 0, 1, 2, 4, 5, 6, 6, 6], [0, 0, 0, 1, 2, 4, 5, 6, 6, 6])
+    LR = init_tensor_product_LR_spline(
+        2, 2, [0, 0, 0, 1, 2, 4, 5, 6, 6, 6], [0, 0, 0, 1, 2, 4, 5, 6, 6, 6]
+    )
 
     x = np.linspace(0, 6, N, endpoint=False)
     y = np.linspace(0, 6, N, endpoint=False)
@@ -42,7 +44,9 @@ def test_lr_spline_partition_of_unity_two_interior(N):
 
 @pytest.mark.parametrize("N", [2, 4, 6, 8])
 def test_lr_spline_partition_of_unity_full(N):
-    LR = init_tensor_product_LR_spline(2, 2, [0, 0, 0, 1, 2, 4, 5, 6, 6, 6], [0, 0, 0, 1, 2, 4, 5, 6, 6, 6])
+    LR = init_tensor_product_LR_spline(
+        2, 2, [0, 0, 0, 1, 2, 4, 5, 6, 6, 6], [0, 0, 0, 1, 2, 4, 5, 6, 6, 6]
+    )
 
     x = np.linspace(0, 6, N, endpoint=True)
     y = np.linspace(0, 6, N, endpoint=True)

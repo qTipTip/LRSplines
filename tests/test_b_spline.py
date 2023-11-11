@@ -10,7 +10,7 @@ from LRSplines.b_spline import (
 from LRSplines.element import Element
 
 
-@pytest.fixture(scope='function')
+@pytest.fixture(scope="function")
 def B():
     du = 2
     dv = 2
@@ -104,7 +104,9 @@ def test_evaluate_univariate_b_spline_two():
             return 0
 
     for x in X:
-        np.testing.assert_almost_equal(_evaluate_univariate_b_spline(x, k, d, endpoint=True), exact(x))
+        np.testing.assert_almost_equal(
+            _evaluate_univariate_b_spline(x, k, d, endpoint=True), exact(x)
+        )
 
 
 def test_evaluate_univariate_b_spline_outside_knots():
@@ -192,7 +194,9 @@ def test_univariate_derivative():
         else:
             return 0
 
-    computed_derivative = [_evaluate_univariate_b_spline(X, k, d, endpoint=True, r=1) for X in x]
+    computed_derivative = [
+        _evaluate_univariate_b_spline(X, k, d, endpoint=True, r=1) for X in x
+    ]
     expected_derivative = [d_exact(X) for X in x]
 
     np.testing.assert_allclose(computed_derivative, expected_derivative)
@@ -208,7 +212,9 @@ def test_univariate_derivative_quadratic():
             return -2 * (1 - x)
         return 0
 
-    computed_derivative = [_evaluate_univariate_b_spline(X, k, d, endpoint=True, r=1) for X in x]
+    computed_derivative = [
+        _evaluate_univariate_b_spline(X, k, d, endpoint=True, r=1) for X in x
+    ]
     expected_derivative = [d_exact(X) for X in x]
 
     np.testing.assert_allclose(computed_derivative, expected_derivative)

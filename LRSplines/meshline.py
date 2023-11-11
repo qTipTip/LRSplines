@@ -18,12 +18,16 @@ def hierarchical_meshline_rectangle(min_u, min_v, max_u, max_v, step=0.5):
     :return:
     """
     meshlines = [
-                    Meshline(start=min_u, stop=max_u, constant_value=c, axis=1)
-                    for c in [min_v + step + step * i for i in range(int((max_v - min_v) / step) - 1)]
-                ] + [
-                    Meshline(start=min_v, stop=max_v, constant_value=c, axis=0)
-                    for c in [min_u + step + step * i for i in range(int((max_u - min_u) / step) - 1)]
-                ]
+        Meshline(start=min_u, stop=max_u, constant_value=c, axis=1)
+        for c in [
+            min_v + step + step * i for i in range(int((max_v - min_v) / step) - 1)
+        ]
+    ] + [
+        Meshline(start=min_v, stop=max_v, constant_value=c, axis=0)
+        for c in [
+            min_u + step + step * i for i in range(int((max_u - min_u) / step) - 1)
+        ]
+    ]
     return meshlines
 
 
@@ -32,7 +36,14 @@ class Meshline:
     Represents a meshline (knotline) in given direction with designated endpoints.
     """
 
-    def __init__(self, start: float, stop: float, constant_value: float, axis: int, multiplicity: int = 1) -> None:
+    def __init__(
+        self,
+        start: float,
+        stop: float,
+        constant_value: float,
+        axis: int,
+        multiplicity: int = 1,
+    ) -> None:
         """
         Initialize a mesh line from start to stop in direction `axis` with given constant value.
         :param start: start of line
@@ -55,11 +66,17 @@ class Meshline:
         """
 
         if self.axis == 0:  # vertical split
-            return element.u_min < self.constant_value < element.u_max and self.start <= element.v_min and \
-                   self.stop >= element.v_max
+            return (
+                element.u_min < self.constant_value < element.u_max
+                and self.start <= element.v_min
+                and self.stop >= element.v_max
+            )
         elif self.axis == 1:  # horizontal split
-            return element.v_min < self.constant_value < element.v_max and self.start <= element.u_min and \
-                   self.stop >= element.u_max
+            return (
+                element.v_min < self.constant_value < element.v_max
+                and self.start <= element.u_min
+                and self.stop >= element.u_max
+            )
         return False
 
     def splits_basis(self, basis: BSpline) -> bool:
@@ -70,11 +87,17 @@ class Meshline:
         """
 
         if self.axis == 0:  # vertical split
-            return basis.knots_u[0] < self.constant_value < basis.knots_u[-1] and \
-                   self.start <= basis.knots_v[0] and self.stop >= basis.knots_v[-1]
+            return (
+                basis.knots_u[0] < self.constant_value < basis.knots_u[-1]
+                and self.start <= basis.knots_v[0]
+                and self.stop >= basis.knots_v[-1]
+            )
         elif self.axis == 1:  # horizontal split
-            return basis.knots_v[0] < self.constant_value < basis.knots_v[-1] and \
-                   self.start <= basis.knots_u[0] and self.stop >= basis.knots_u[-1]
+            return (
+                basis.knots_v[0] < self.constant_value < basis.knots_v[-1]
+                and self.start <= basis.knots_u[0]
+                and self.stop >= basis.knots_u[-1]
+            )
         return False
 
     def number_of_knots_contained(self, basis: BSpline) -> int:
@@ -124,7 +147,10 @@ class Meshline:
         :return: true or false
         """
         tol = 1.0e-14
-        return self.axis == other.axis and abs(self.constant_value - other.constant_value) < tol
+        return (
+            self.axis == other.axis
+            and abs(self.constant_value - other.constant_value) < tol
+        )
 
     def __eq__(self, other: "Meshline") -> bool:
         """
@@ -134,8 +160,12 @@ class Meshline:
         :return: true or false
         """
         tol = 1.0e-14
-        return self._similar(other) and abs(self.start - other.start) < tol and abs(
-            self.stop - other.stop) < tol and self.multiplicity == other.multiplicity
+        return (
+            self._similar(other)
+            and abs(self.start - other.start) < tol
+            and abs(self.stop - other.stop) < tol
+            and self.multiplicity == other.multiplicity
+        )
 
     def contains(self, other: "Meshline") -> bool:
         """
@@ -163,5 +193,6 @@ class Meshline:
         return not (other.stop < self.start or self.stop < other.start)
 
     def __repr__(self):
-        return "Meshline(start={}, stop={}, constant_value={}, axis={})".format(self.start, self.stop,
-                                                                                self.constant_value, self.axis)
+        return "Meshline(start={}, stop={}, constant_value={}, axis={})".format(
+            self.start, self.stop, self.constant_value, self.axis
+        )

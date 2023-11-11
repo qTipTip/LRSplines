@@ -13,7 +13,7 @@ def test_aux_split_methods():
     B = BSpline(d1, d2, ku, kv)
 
     m = Meshline(0, 5, constant_value=3, axis=0)
-    eps = 1.0E-14
+    eps = 1.0e-14
     b1, b2 = split_single_basis_function(m, B)
 
     assert b1.weight == 1

@@ -74,7 +74,7 @@ def test_lr_spline_insert_line_single():
         Element(2, 0, 3, 1),
         Element(0, 1, 1, 2),
         Element(1, 1, 2, 2),
-        Element(2, 1, 3, 2)
+        Element(2, 1, 3, 2),
     ]
 
     assert all([LR.contains_element(e) for e in expected_elements])
@@ -110,7 +110,7 @@ def test_lr_spline_insert_line_multiple():
         Element(2, 0, 3, 1),
         Element(0, 1, 1, 2),
         Element(1, 1, 2, 2),
-        Element(2, 1, 3, 2)
+        Element(2, 1, 3, 2),
     ]
 
     assert all([LR.contains_element(e) for e in expected_elements])
@@ -129,13 +129,17 @@ def test_lr_spline_unique_basis_functions():
 
 
 def test_lr_spline_previously_split_functions():
-    LR = init_tensor_product_LR_spline(2, 2, [0, 0, 0, 1, 2, 4, 5, 6, 6, 6], [0, 0, 0, 1, 2, 4, 5, 6, 6, 6])
+    LR = init_tensor_product_LR_spline(
+        2, 2, [0, 0, 0, 1, 2, 4, 5, 6, 6, 6], [0, 0, 0, 1, 2, 4, 5, 6, 6, 6]
+    )
     m = Meshline(1, 5, constant_value=3, axis=0)
     LR.insert_line(m)
 
 
 def test_lr_spline_overloading_count_bilinear():
-    LR = init_tensor_product_LR_spline(1, 1, [0, 0, 1, 2, 3, 4, 5, 6, 6], [0, 0, 1, 2, 3, 4, 5, 6, 6])
+    LR = init_tensor_product_LR_spline(
+        1, 1, [0, 0, 1, 2, 3, 4, 5, 6, 6], [0, 0, 1, 2, 3, 4, 5, 6, 6]
+    )
 
     m1 = Meshline(2, 4, constant_value=3.5, axis=0)
     m2 = Meshline(2, 4, constant_value=2.5, axis=0)
