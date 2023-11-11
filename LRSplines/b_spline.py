@@ -18,7 +18,7 @@ def memoize(f):
 
         def __call__(self, x, knots, degree, endpoint=False, r=0):
             knots = np.array(knots)
-            key = '{} {} {} {}'.format(x, degree, endpoint, r) + str(knots.tostring())
+            key = '{} {} {} {}'.format(x, degree, endpoint, r) + str(knots.tobytes())
             if key not in self.cache:
                 self.cache[key] = f(x, knots, degree, endpoint, r)
             return self.cache[key]

@@ -457,9 +457,9 @@ class LRSpline(object):
         while len(self.S) <= previous_dim * (1 + beta):
             element_to_refine = max(self.M, key=error_function)
 
-            if refinement_strategy is 'minimal':
+            if refinement_strategy == 'minimal':
                 m = self.get_minimal_span_meshline(element_to_refine, axis=number_of_inserted_lines % 2)
-            elif refinement_strategy is 'full':
+            elif refinement_strategy == 'full':
                 m = self.get_full_span_meshline(element_to_refine, axis=number_of_inserted_lines % 2)
             else:
                 raise NotImplemented('The requested refinement strategy is not implemented yet')
@@ -554,7 +554,7 @@ class LRSpline(object):
         for i in range(len(self.S)):
             if self.S[i].is_edge_dof():
                 idx.append(i)
-        return np.array(idx, dtype=np.int)
+        return np.array(idx, dtype=int)
 
     def update_global_indices(self):
         for i, b in enumerate(self.S):

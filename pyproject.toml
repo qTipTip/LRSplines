@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.11,<3.13"
 numpy = "^1.26.1"
 matplotlib = "^3.8.1"
+mpld3 = "^0.5.9"
 
 
 [tool.poetry.group.dev.dependencies]
