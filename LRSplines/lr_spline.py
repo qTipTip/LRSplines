@@ -462,7 +462,7 @@ class LRSpline(object):
             elif refinement_strategy == 'full':
                 m = self.get_full_span_meshline(element_to_refine, axis=number_of_inserted_lines % 2)
             else:
-                raise NotImplemented('The requested refinement strategy is not implemented yet')
+                raise NotImplementedError('The requested refinement strategy is not implemented yet')
             self.insert_line(m)
             number_of_inserted_lines += 1
 

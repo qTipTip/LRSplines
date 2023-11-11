@@ -1,11 +1,8 @@
-import random
-from timeit import default_timer as timer
 
 import matplotlib.patches as plp
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
-import scipy.integrate as integrate
 
 from LRSplines.lr_spline import init_tensor_product_LR_spline
 
