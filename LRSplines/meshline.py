@@ -27,7 +27,7 @@ def hierarchical_meshline_rectangle(min_u, min_v, max_u, max_v, step=0.5):
     return meshlines
 
 
-class Meshline(object):
+class Meshline:
     """
     Represents a meshline (knotline) in given direction with designated endpoints.
     """

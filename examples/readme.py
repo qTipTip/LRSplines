@@ -15,8 +15,8 @@ LR.insert_line(m1)
 LR.insert_line(m2)
 LR.visualize_mesh()
 
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 
 # set the coefficients explicitly

@@ -9,7 +9,7 @@ from LRSplines.b_spline import BSpline
 BasisFunctions = typing.List[BSpline]
 
 
-class Element(object):
+class Element:
 
     def __init__(self, u_min: float, v_min: float, u_max: float, v_max: float, level: int = 0) -> None:
         """
@@ -176,7 +176,7 @@ class Element(object):
             self.v_min - other.v_min) < tol and abs(self.v_max - other.v_max) < tol
 
     def __repr__(self):
-        return "Element({}, {}, {}, {})".format(self.u_min, self.v_min, self.u_max, self.v_max)
+        return f"Element({self.u_min}, {self.v_min}, {self.u_max}, {self.v_max})"
 
     def is_overloaded(self) -> bool:
         """

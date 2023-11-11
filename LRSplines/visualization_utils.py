@@ -1,7 +1,7 @@
 import matplotlib.patches as plp
 import matplotlib.pyplot as plt
 
-from LRSplines import init_tensor_product_LR_spline, Meshline, np
+from LRSplines import Meshline, init_tensor_product_LR_spline, np
 
 
 def plot_basis_function(LR, basis_function):

@@ -1,4 +1,4 @@
-from LRSplines import init_tensor_product_LR_spline, hierarchical_meshline_rectangle
+from LRSplines import hierarchical_meshline_rectangle, init_tensor_product_LR_spline
 from LRSplines.statistics import overloads_per_level
 
 ku = [0, 0, 0, 1, 2, 3, 3, 3]

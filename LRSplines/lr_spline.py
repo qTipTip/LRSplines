@@ -76,7 +76,7 @@ def init_tensor_product_LR_spline(d1: int, d2: int, ku: Vector, kv: Vector) -> '
     return LRSpline(elements, basis, meshlines, u_range, v_range, unique_ku, unique_kv)
 
 
-class LRSpline(object):
+class LRSpline:
     """
     Represents a LRSpline, which is a tuple (M, S), where M is a mesh and S is a set of basis functions
     defined on M.
@@ -110,7 +110,7 @@ class LRSpline(object):
 
         :param e: element to refine
         """
-        raise NotImplementedError('LRSpline.{} is not implemented yet'.format(self.refine_by_element_full.__name__))
+        raise NotImplementedError(f'LRSpline.{self.refine_by_element_full.__name__} is not implemented yet')
 
     def refine_by_element_minimal(self, e: Element) -> None:
         """
@@ -336,7 +336,7 @@ class LRSpline(object):
             if e.contains(u, v):
                 break
         else:
-            raise ValueError('({}, {}) is not in the domain'.format(u, v))
+            raise ValueError(f'({u}, {v}) is not in the domain')
         self.last_element = e
         return e
 
@@ -414,7 +414,7 @@ class LRSpline(object):
             else:
                 axs.plot(x, y, color='black', linewidth=0.5)
             if multiplicity:
-                axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(m.multiplicity),
+                axs.text(m.midpoint[0], m.midpoint[1], f'{m.multiplicity}',
                          bbox=dict(facecolor='white', alpha=1), ha='center', va='center')
         for m in self.M:
             w = m.u_max - m.u_min
@@ -429,10 +429,10 @@ class LRSpline(object):
                         plp.Rectangle((m.u_min, m.v_min), w, h, fill=True, color='green' if color else 'white',
                                       alpha=0.2))
                 if text:
-                    axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(len(m.supported_b_splines)), ha='center',
+                    axs.text(m.midpoint[0], m.midpoint[1], f'{len(m.supported_b_splines)}', ha='center',
                              va='center')
         if title:
-            plt.title('dim(S) = {}'.format(len(self.S)))
+            plt.title(f'dim(S) = {len(self.S)}')
 
         if not axes:
             plt.axis('off')

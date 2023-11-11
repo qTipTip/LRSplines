@@ -1,8 +1,8 @@
 
 import matplotlib.patches as plp
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
 
 from LRSplines.lr_spline import init_tensor_product_LR_spline
 
@@ -24,7 +24,7 @@ def visualize_mesh(LR) -> None:
             axs.plot(y, x, color='black')
         else:
             axs.plot(x, y, color='black')
-        axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(m.multiplicity), bbox=dict(facecolor='white', alpha=1))
+        axs.text(m.midpoint[0], m.midpoint[1], f'{m.multiplicity}', bbox=dict(facecolor='white', alpha=1))
     for m in LR.M:
         w = m.u_max - m.u_min
         h = m.v_max - m.v_min
@@ -34,8 +34,8 @@ def visualize_mesh(LR) -> None:
         else:
             axs.add_patch(plp.Rectangle((m.u_min, m.v_min), w, h, fill=True, color='green', alpha=0.2))
 
-        axs.text(m.midpoint[0], m.midpoint[1], '{}'.format(len(m.supported_b_splines)))
-    plt.title('dim(S) = {}'.format(len(LR.S)))
+        axs.text(m.midpoint[0], m.midpoint[1], f'{len(m.supported_b_splines)}')
+    plt.title(f'dim(S) = {len(LR.S)}')
 
 
 if __name__ == '__main__':

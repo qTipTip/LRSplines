@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from LRSplines import init_tensor_product_LR_spline, BSpline
+from LRSplines import BSpline, init_tensor_product_LR_spline
 
 
 def plot_lr(b: BSpline):

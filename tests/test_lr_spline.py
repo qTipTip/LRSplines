@@ -4,7 +4,7 @@ import numpy as np
 
 from LRSplines.b_spline import BSpline
 from LRSplines.element import Element
-from LRSplines.lr_spline import init_tensor_product_LR_spline, LRSpline, _at_end
+from LRSplines.lr_spline import LRSpline, _at_end, init_tensor_product_LR_spline
 from LRSplines.meshline import Meshline
 
 

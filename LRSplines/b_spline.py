@@ -11,14 +11,14 @@ ElementVector = typing.List['Element']
 
 
 def memoize(f):
-    class MemoClass():
+    class MemoClass:
         def __init__(self, f):
             self.f = f
             self.cache = {}
 
         def __call__(self, x, knots, degree, endpoint=False, r=0):
             knots = np.array(knots)
-            key = '{} {} {} {}'.format(x, degree, endpoint, r) + str(knots.tobytes())
+            key = f'{x} {degree} {endpoint} {r}' + str(knots.tobytes())
             if key not in self.cache:
                 self.cache[key] = f(x, knots, degree, endpoint, r)
             return self.cache[key]
@@ -120,7 +120,7 @@ def cached_univariate(degree: int, knots: typing.Union[typing.List[float], np.nd
     return cached_evaluation
 
 
-class BSpline(object):
+class BSpline:
     """
     Represents a single weighted tensor product B-spline with associated methods and fields.
     """

@@ -2,7 +2,11 @@ import numpy as np
 import pytest
 
 from LRSplines import init_tensor_product_LR_spline
-from LRSplines.b_spline import BSpline, _evaluate_univariate_b_spline, _find_knot_interval
+from LRSplines.b_spline import (
+    BSpline,
+    _evaluate_univariate_b_spline,
+    _find_knot_interval,
+)
 from LRSplines.element import Element
 
 
